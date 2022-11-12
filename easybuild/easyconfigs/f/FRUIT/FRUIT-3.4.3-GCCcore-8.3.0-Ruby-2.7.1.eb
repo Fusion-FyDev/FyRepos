@@ -1,0 +1,47 @@
+easyblock = 'ConfigureMake'
+
+name = 'FRUIT'
+version = '3.4.3'
+local_rubyver='2.7.1'
+versionsuffix = '-Ruby-'+local_rubyver
+
+homepage = 'https://sourceforge.net/projects/fortranxunit/'
+description = """FORTRAN Unit Test Framework, written in FORTRAN 95. """
+
+toolchain = {'name': 'GCCcore', 'version': '8.3.0'}
+toolchainopts = {'pic': True}
+
+source_urls = [
+    'https://sourceforge.net/projects/fortranxunit/'
+]
+sources = [{
+    'filename': '%(namelower)s_%(version)s.zip',
+    'download_filename': '%(namelower)s_%(version)s.zip',
+}]
+
+patches=['fruit-gfortran.patch']
+
+dependencies = [
+    ('Ruby', local_rubyver),
+    ('binutils','2.32') # Critical to gfortran-8.3.0
+    ]
+
+skipsteps = ['configure', 'install']
+
+build_cmd="""cd fruit_processor_gem  &&
+export export LANG=\"\"
+export PREFIX=%(installdir)s/lib/ruby/gems/2.7.0/gems  &&
+export GEM_PATH=%(installdir)s/lib/ruby/gems/2.7.0/gems:$EBROOTRUBY/lib/ruby/gems/2.7.0/gems  &&
+rake install &&
+cd ..  &&
+cp -r src doc %(installdir)s  &&
+rake compile  &&
+cp src/*.a %(installdir)s/lib/  &&
+echo """
+
+sanity_check_paths = {
+    'files': [],
+    'dirs': ['doc','src']
+}
+
+moduleclass = 'tools'

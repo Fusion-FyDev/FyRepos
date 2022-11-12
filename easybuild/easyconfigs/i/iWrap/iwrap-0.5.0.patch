@@ -1,0 +1,20 @@
+--- Makefile.orig	2022-09-11 22:11:22.298364000 +0800
++++ Makefile	2022-09-11 22:23:16.913816000 +0800
+@@ -19,14 +19,15 @@
+ INSTALL_MOD ?= $(HOME)/IWRAP_MODULE_DIR/
+ 
+ all: iwrap_build
+-install: install_dir install_iwrap install_module
++install: install_dir install_iwrap 
++module: install_module
+ uninstall: uninstall_module uninstall_iwrap
+ 
+ .PHONY: build/module/$(MODULEFILE) iwrap_build build_deps build_deps_clear help clean docs
+ 
+ install_dir:
+ ifdef INSTALL_DIR
+-	$(eval INSTALL_PREFIX = $(INSTALL_DIR)/$(VERSION))
++	$(eval INSTALL_PREFIX = $(INSTALL_DIR))
+ 	$(eval INSTALL_PY = $(INSTALL_PREFIX)/lib/python$(PY_VER))
+ endif
+ 

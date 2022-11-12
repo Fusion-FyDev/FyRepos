@@ -1,0 +1,60 @@
+# Site configuration Makefile for ASIPP Organization's HPC Cluster ShenMa
+# diff -ruN --no-dereference installer.orig/site-config/Makefile.fuyun installer/site-config/Makefile.fuyun
+
+IMAS_CPP = yes
+IMAS_FORTRAN = yes
+IMAS_GFORTRAN = yes # FORTRAN compiler
+IMAS_IFORT = no # FORTRAN compiler
+IMAS_G95 = no # FORTRAN compiler
+IMAS_NAGFOR = no # FORTRAN compiler
+IMAS_PGI = no # FORTRAN compiler
+IMAS_JAVA = no
+IMAS_MATLAB = no
+IMAS_MEX = no
+IMAS_PYTHON = yes
+IMAS_PYTHON2 = no
+IMAS_PYTHON3 = yes
+
+# Build with MDSplus backend
+IMAS_MDSPLUS = yes
+# Build with HDF5 backend
+IMAS_HDF5 = no # Broken
+
+# Build with UDA backend
+IMAS_UDA = no
+IMAS_HDC = no
+
+
+# Include \n to have pretty linebreaks in the modulefile.
+MODULEFILE_DEPENDENCIES={\n\
+    foss         foss/2020a \n\
+    Python       Python/3.8.2-GCCcore-9.3.0 \n\
+    MDSplus      MDSplus/7.96.12-GCCcore-9.3.0  \n\
+    Blitz++      Blitz++/1.0.2 \n\
+}
+
+# Test for this jar file in the CLASSPATH:
+SAXONJARFILE=saxon9he.jar
+
+# Test for this pc file in the PKG_CONFIG_PATH, leave empty to skip test:
+BLITZPCFILE=blitz.pc
+
+# Test that these module names are loaded for UAL compilation (compile time):
+UAL_MODULES = Blitz++
+# Additionally test for these module names in case of IMAS_PGI=yes IMAS_IFORT=yes,.. see below.
+UAL_MODULES_MDSPLUS = MDSplus
+UAL_MODULES_UDA = UDA
+UAL_MODULES_HDC = 
+UAL_MODULES_G95 =
+UAL_MODULES_NAGFOR =
+UAL_MODULES_PGI =
+UAL_MODULES_INTEL =
+UAL_MODULES_JAVA = 
+UAL_MODULES_PYTHON2 =
+UAL_MODULES_PYTHON3 = Python
+
+# Additional search path to local IMAS scripts that is added to $PATH by imas module
+IMAS_EXTRA_PATH = $(IMAS_HOME)/extra/bin
+IMAS_EXTRA_MATLABPATH = $(IMAS_HOME)/extra/matlab
+IMAS_EXTRA_PYTHONPATH = $(IMAS_HOME)/core/pyual:$(IMAS_HOME)/extra/bin
+ 

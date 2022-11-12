@@ -1,0 +1,144 @@
+diff -ruN fc2k.orig/scripts/TemplateF.py fc2k/scripts/TemplateF.py
+--- fc2k.orig/scripts/TemplateF.py	2020-06-02 07:32:33.137906376 +0000
++++ fc2k/scripts/TemplateF.py	2020-06-02 07:33:04.878011374 +0000
+@@ -3,16 +3,31 @@
+ 
+ !--------------------------------------------------
+ module %(idsmodule)s
+-    type, BIND(C)::idsstruct
+-        character(132)::ids
+-        integer::shot
+-        integer::run
+-        integer::occurrence
+-        integer::idx
+-        character(132)::machine
+-        character(132)::user
+-        character(132)::version
+-    end type
++        USE ISO_C_BINDING
++        type, BIND(C)::idsstruct
++                character(kind=c_char)::ids(132)
++                integer::shot
++                integer::run
++                integer::occurrence
++                integer::idx
++                character(kind=c_char)::machine(132)
++                character(kind=c_char)::user(132)
++                character(kind=c_char)::version(132)
++        end type
++
++        contains
++ 
++        function str_convert( s_in)
++                character(len=1) :: s_in(132)
++                character(len=132) :: str_convert
++                INTEGER :: i
++                DO i = 1, 132
++                   str_convert(i:i) = s_in(i)
++                END DO
++
++                return 
++        end function str_convert
++
+ end module
+ !--------------------------------------------------
+ 
+@@ -94,13 +109,13 @@
+ ! ----------- Get IDS: %(idsin)s ----------------------------
+ if (M_%(idsin)s%occurrence/=0) then
+         write(tabchar,"(i0)") M_%(idsin)s%occurrence
+-        tabchar=trim(M_%(idsin)s%ids)//"/"//trim(tabchar)
++        tabchar=trim(str_convert(M_%(idsin)s%ids))//"/"//trim(tabchar)
+ else
+-        tabchar=trim(M_%(idsin)s%ids)
++        tabchar=trim(str_convert(M_%(idsin)s%ids))
+ endif
+ 
+ call ids_get(M_%(idsin)s%idx,trim(tabchar),%(idsin)s)
+-write(*,*) "ids_get idx/ids/occur :", M_%(idsin)s%idx, trim(M_%(idsin)s%ids),M_%(idsin)s%occurrence,trim(tabchar)
++write(*,*) "ids_get idx/ids/occur :", M_%(idsin)s%idx, trim(str_convert(M_%(idsin)s%ids)),M_%(idsin)s%occurrence,trim(tabchar)
+ '''
+ 
+ GetParameters='''\
+@@ -178,11 +193,11 @@
+ !--------- Put IDS: %(idsout)s ------------------------
+ if (M_%(idsout)s%occurrence/=0) then
+         write(tabchar,"(i0)") M_%(idsout)s%occurrence
+-        tabchar=trim(M_%(idsout)s%ids)//"/"//trim(tabchar)
++        tabchar=trim(str_convert(M_%(idsout)s%ids))//"/"//trim(tabchar)
+ else
+-        tabchar=trim(M_%(idsout)s%ids)
++        tabchar=trim(str_convert(M_%(idsout)s%ids))
+ endif
+-write(*,*) "ids_put idx/ids/occur :", M_%(idsout)s%idx, trim(M_%(idsout)s%ids),M_%(idsout)s%occurrence,trim(tabchar)
++write(*,*) "ids_put idx/ids/occur :", M_%(idsout)s%idx, trim(str_convert(M_%(idsout)s%ids)),M_%(idsout)s%occurrence,trim(tabchar)
+ call ids_put(M_%(idsout)s%idx,trim(tabchar),%(idsout)s)
+ 
+ '''
+@@ -228,9 +243,9 @@
+ !--------- Get IDS slice: %(idsin)s ------------------------
+ if (M_%(idsin)s%occurrence/=0) then
+         write(tabchar,"(i0)") M_%(idsin)s%occurrence
+-        tabchar=trim(M_%(idsin)s%ids)//"/"//trim(tabchar)
++        tabchar=trim(str_convert(M_%(idsin)s%ids))//"/"//trim(tabchar)
+ else
+-        tabchar=trim(M_%(idsin)s%ids)
++        tabchar=trim(str_convert(M_%(idsin)s%ids))
+ endif
+ call ids_get_slice(M_%(idsin)s%idx,trim(tabchar),%(idsin)s,wrap_%(twant)s,2)
+ '''
+@@ -253,9 +268,9 @@
+ !--------- Put IDS slice: %(idsout)s ------------------------
+ if (M_%(idsout)s%occurrence/=0) then
+         write(tabchar,"(i0)") M_%(idsout)s%occurrence
+-        tabchar=trim(M_%(idsout)s%ids)//"/"//trim(tabchar)
++        tabchar=trim(str_convert(M_%(idsout)s%ids))//"/"//trim(tabchar)
+ else
+-        tabchar=trim(M_%(idsout)s%ids)
++        tabchar=trim(str_convert(M_%(idsout)s%ids))
+ endif
+ 
+ %(idsout)s%time=wrap_%(twant)s
+@@ -271,9 +286,9 @@
+ !--------- Put IDS slice: %(idsout)s ------------------------
+ if (M_%(idsout)s%occurrence/=0) then
+         write(tabchar,"(i0)") M_%(idsout)s%occurrence
+-        tabchar=trim(M_%(idsout)s%ids)//"/"//trim(tabchar)
++        tabchar=trim(str_convert(M_%(idsout)s%ids))//"/"//trim(tabchar)
+ else
+-        tabchar=trim(M_%(idsout)s%ids)
++        tabchar=trim(str_convert(M_%(idsout)s%ids))
+ endif
+ 
+ !-- In case time was not allocated in user's code, allocate it --
+diff -ruN fc2k.orig/scripts/TemplateStandaloneFortran.py fc2k/scripts/TemplateStandaloneFortran.py
+--- fc2k.orig/scripts/TemplateStandaloneFortran.py	2020-06-02 07:32:33.137906376 +0000
++++ fc2k/scripts/TemplateStandaloneFortran.py	2020-06-02 07:33:15.366046044 +0000
+@@ -163,9 +163,9 @@
+       do while (j.lt.i)
+          if ( lidss(j)%shot .eq. lidss(i)%shot .and.       &
+               lidss(j)%run .eq. lidss(i)%run .and.         &
+-              lidss(j)%user .eq. lidss(i)%user .and.       &
+-              lidss(j)%machine .eq. lidss(i)%machine .and. &
+-              lidss(j)%version .eq. lidss(i)%version ) then
++              str_convert(lidss(j)%user) .eq. str_convert(lidss(i)%user) .and.       &
++              str_convert(lidss(j)%machine) .eq. str_convert(lidss(i)%machine) .and. &
++              str_convert(lidss(j)%version) .eq. str_convert(lidss(i)%version) ) then
+             EXIT
+          else
+             j=j+1
+@@ -175,12 +175,12 @@
+ '''
+ mainopenual='''\
+          call imas_open_env(treename,lidss(i)%shot,lidss(i)%run,&
+-              lidss(i)%idx,lidss(i)%user,lidss(i)%machine,lidss(i)%version)
++              lidss(i)%idx,str_convert(lidss(i)%user),str_convert(lidss(i)%machine),str_convert(lidss(i)%version))
+ '''
+ mainopenualMPI='''\
+          if (myrank.eq.0) then
+             call imas_open_env(treename,lidss(i)%shot,lidss(i)%run,&
+-                 lidss(i)%idx,lidss(i)%user,lidss(i)%machine,lidss(i)%version)
++                 lidss(i)%idx,str_convert(lidss(i)%user),str_convert(lidss(i)%machine),str_convert(lidss(i)%version))
+          end if
+          call MPI_Bcast(lidss(i)%idx, 1, MPI_INT, 0, MPI_COMM_WORLD, ierr)
+ '''

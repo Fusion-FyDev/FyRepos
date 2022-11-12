@@ -1,0 +1,467 @@
+diff -ruN --no-dereference cql3d.orig/makefile_gfortran64_noplots cql3d/makefile_gfortran64_noplots
+--- cql3d.orig/makefile_gfortran64_noplots	2021-01-04 10:13:04.510000000 +0800
++++ cql3d/makefile_gfortran64_noplots	2021-01-04 11:05:49.630000000 +0800
+@@ -1,12 +1,16 @@
+ # makefile for CQL3D using gfortran64 on bob8 (Intel core 2)
+ 
+ SHELL     = /bin/sh
+-NAME      = xcql3d_gfortran64_noplots
++NAME      = xcql3d.gfortran64
+ COMPILER=	gfortran
+ BUILDER=	$(COMPILER)
+ INCLUDES  = advnce.h comm.h frcomm.h frname.h frname_decl.h name.h  \
+ 	param.h trans.h wpadvnc.h name_decl.h
+-SOURCES  = a_cqlp.f  abchief.f  achief1.f  achiefn.f  aclear.f  ainalloc.f  \
++SOURCES  = adcaut.f  adcdo.f   adce.f   adcerc.f \
++	adcfnm.f   adcout.f  adcset.f  adctip.f \
++	adcbrm.f   adcdrc.f  adcei.f   adcexc.f \
++	adcinit.f  adcrrc.f  adcstd.f  adcxxs.f \
++	a_cqlp.f  abchief.f  achief1.f  achiefn.f  aclear.f  ainalloc.f  \
+ 	aindflt.f  aindflt1.f aindfpa.f  aingeom.f  ainitial.f   \
+ 	ainpla.f  ainplt.f  ainpltpa.f   \
+ 	ainsetpa.f  ainsetva.f  ainspec.f  ainvnorm.f ampfar.f \
+@@ -84,11 +88,11 @@
+ OBJECTS   = $(SOURCES:.f=.o)
+ #LOCATION  =     -L/usr/lib64  -L/usr/local/pgplot -L/home/bobh/cql3d/cql3d_cvs/SPARSKIT2_gfortran64
+ #LOCATION  =     -L/usr/lib64  -L/usr/local/pgplot
+-LOCATION  =     -L/usr/lib64
++LOCATION  =     -L/usr/lib64   -L${EBROOTPGPLOT} -L${EBROOTNETCDF}/lib -I${EBROOTNETCDFMINFORTRAN}/lib 
+ #LIBRARIES=   -lskit -lX11 -lnetcdff -lnetcdf -lpgplot -llapack -lblas
+ #LIBRARIES=   -lX11 -lnetcdff -lnetcdf -lpgplot -llapack -lblas
+-LIBRARIES=   -lX11 -lnetcdff -lnetcdf
+-INCLUDE=/usr/include
++LIBRARIES=   -lX11 -lnetcdff -lnetcdf -lpgplot
++INCLUDE= -I/usr/include  -I$(EBROOTNETCDF)/include -I$(EBROOTNETCDFMINFORTRAN)/include   
+ DEBUG     = -g 
+ OPTIMIZE  = -O
+ LISTING   = -Mlist
+@@ -98,7 +102,7 @@
+ #LDSPECIAL = -Wl,-noinhibit-exec -finit-local-zero #Need gfortran 4.3 for zeroing
+ LDSPECIAL = -Wl,-noinhibit-exec
+ #COMPILE   = $(COMPILER) -c $(CSPECIAL) $(DEBUG) -I $(INCLUDE) # or use $(OPTIMIZE)
+-COMPILE   =  $(COMPILER) -c $(CSPECIAL) $(OPTIMIZE) -I $(INCLUDE) # or use $(DEBUG)
++COMPILE   =  $(COMPILER) -c $(CSPECIAL) $(OPTIMIZE) $(INCLUDE) -fno-align-commons # or use $(DEBUG)
+ #LOAD      = $(BUILDER) -o $(NAME) $(LDSPECIAL) $(DEBUG) # Remove -m for optimize
+ LOAD      = $(BUILDER) -o $(NAME) $(LDSPECIAL)  # Remove -m for optimize
+ PROTECT   = chmod 755
+diff -ruN --no-dereference cql3d.orig/makefile_mpi.gfortran64 cql3d/makefile_mpi.gfortran64
+--- cql3d.orig/makefile_mpi.gfortran64	2021-01-04 10:13:04.510000000 +0800
++++ cql3d/makefile_mpi.gfortran64	2021-01-04 11:06:35.830000000 +0800
+@@ -18,7 +18,11 @@
+ BUILDER=	$(COMPILER)
+ INCLUDES  = advnce.h comm.h frcomm.h frname.h frname_decl.h name.h  \
+ 	param.h trans.h wpadvnc.h name_decl.h
+-SOURCES  = a_cqlp.f  abchief.f  achief1.f  achiefn.f  aclear.f  ainalloc.f  \
++SOURCES  = adcaut.f  adcdo.f   adce.f   adcerc.f \
++	adcfnm.f   adcout.f  adcset.f  adctip.f \
++	adcbrm.f   adcdrc.f  adcei.f   adcexc.f \
++	adcinit.f  adcrrc.f  adcstd.f  adcxxs.f \
++	a_cqlp.f  abchief.f  achief1.f  achiefn.f  aclear.f  ainalloc.f   \
+ 	aindflt.f  aindflt1.f aindfpa.f  aingeom.f  ainitial.f   \
+ 	ainpla.f  ainplt.f  ainpltpa.f   \
+ 	ainsetpa.f  ainsetva.f  ainspec.f  ainvnorm.f ampfar.f \
+@@ -93,10 +97,10 @@
+         mpilib.f
+ 
+ OBJECTS   = $(SOURCES:.f=.o)
+-LOCATION  =     -L/usr/lib64  -L/usr/local/pgplot
++LOCATION  =  -L/usr/lib64  -L${EBROOTPGPLOT} -L${EBOPENMPI}/lib -L${EBROOTNETCDF}/lib -I${EBROOTNETCDFMINFORTRAN}/lib 
+ #LIBS=	-lX11 -lnetcdff -lnetcdf -lpgplot -llapack -lblas
+-LIBS=	-lX11 -lnetcdff -lnetcdf -lpgplot
+-INCLUDE=/usr/include
++LIBRARIES=	-lmpi -lnetcdff -lnetcdf -lX11  -lpgplot  
++INCLUDE=  -I/usr/include   -I$(EBROOTNETCDF)/include -I$(EBROOTNETCDFMINFORTRAN)/include
+ #DEBUG     = -g -Mbounds
+ DEBUG     = -g 
+ OPTIMIZE  = -O
+@@ -105,7 +109,7 @@
+ #SPECIAL   = -byteswapio -Mbackslash
+ LDSPECIAL = -Wl,-noinhibit-exec 
+ #COMPILE   = mpif77 -c $(CSPECIAL) -c $(DEBUG) -I $(INCLUDE) # or use $(OPTIMIZE)
+-COMPILE   = mpif77 -c $(CSPECIAL) $(OPTIMIZE) -I $(INCLUDE) # or use $(DEBUG)
++COMPILE   = mpif77 -c $(CSPECIAL) $(OPTIMIZE) $(INCLUDE)  -fno-align-commons # or use $(DEBUG)
+ LOAD      = mpif77 -o $(NAME) $(LDSPECIAL) # Remove -m for optimize
+ PROTECT   = chmod 755
+ DELETE    = rm -f
+@@ -115,7 +119,7 @@
+ .SUFFIXES:
+ 
+ $(NAME):           $(OBJECTS)
+-	$(LOAD)    $(OBJECTS) $(LOCATION) $(LIBS)
++	$(LOAD)    $(OBJECTS) $(LOCATION) $(LIBRARIES)
+ 	$(PROTECT) $(NAME)
+ 
+ # Following use of pattern matching works; 
+@@ -134,12 +138,12 @@
+ #Changes introduced by JCW so obtain saved copy of mpi modified sources
+ #	mpi/doparallel.py $< mpitmp.f mpi/mpins_par.f
+ #	$(COMPILE) mpitmp.f -o $@
+-	mpi/doparallel.py $< $*_mpitmp.f mpi/mpins_par.f
++	python2 mpi/doparallel.py $< $*_mpitmp.f mpi/mpins_par.f
+ 	$(COMPILE) $*_mpitmp.f -o $@
+ 
+ rebuild:
+ 	$(COMPILE) $(SOURCES)
+-	$(LOAD) $(OBJECTS) $(LOCATION) $(LIBS)
++	$(LOAD) $(OBJECTS) $(LOCATION) $(LIBRARIES)
+ 
+ clean:
+ 	$(DELETE)  $(OBJECTS) *.lst *_mpitmp.f
+diff -ruN --no-dereference cql3d.orig/mpi/mpins_par.f cql3d/mpi/mpins_par.f
+--- cql3d.orig/mpi/mpins_par.f	2021-01-04 10:13:04.520000000 +0800
++++ cql3d/mpi/mpins_par.f	2021-01-04 10:49:28.670000000 +0800
+@@ -506,183 +506,183 @@
+          WRITE(*,*) 'MPI Full time =',MPI_WTIME()-mpitime
+       endif
+ CMPIINSERT_SUB_SEND_DATA
+-      subroutine send_data  !used in tdchief. (only)
+-      implicit integer (i-n), real*8 (a-h,o-z)
+-      include 'param.h'
+-      include 'comm.h'
+-      include 'mpilib.h'
++    !   subroutine send_data  !used in tdchief. (only)
++    !   implicit integer (i-n), real*8 (a-h,o-z)
++    !   include 'param.h'
++    !   include 'comm.h'
++    !   include 'mpilib.h'
+ 
+-      real*8, allocatable :: 
+-     &        buff(:) ! (mpisz) Buffer for arrays below
++    !   real*8, allocatable :: 
++    !  &        buff(:) ! (mpisz) Buffer for arrays below
+ 
+-      mpifsz= iyjx2*ngen !For send/recv of f(0:iy+1,0:jx+1,1:ngen,lr_),
+-                         !and velsou(0:iy+1,0:jx+1,1:ngen,lr_)
+-                         !and source(0:iy+1,0:jx+1,1:ngen,lr_) !YuP[2020-02-05] added   
+-      mpivsz= mpifsz  != iyjx2*ngen                    
+-      mpicsz= iyjx*ngen  !For send/recv of cal(1:iy,1:jx,1:ngen,lr_)
+-                         !and other collisional coeffs.,
+-                         !and scal(1:iyjx*ngen,lr_)
+-      mpisz= mpifsz +11*mpicsz +2*mpifsz +5*ngen +4 ! buffer size
++    !   mpifsz= iyjx2*ngen !For send/recv of f(0:iy+1,0:jx+1,1:ngen,lr_),
++    !                      !and velsou(0:iy+1,0:jx+1,1:ngen,lr_)
++    !                      !and source(0:iy+1,0:jx+1,1:ngen,lr_) !YuP[2020-02-05] added   
++    !   mpivsz= mpifsz  != iyjx2*ngen                    
++    !   mpicsz= iyjx*ngen  !For send/recv of cal(1:iy,1:jx,1:ngen,lr_)
++    !                      !and other collisional coeffs.,
++    !                      !and scal(1:iyjx*ngen,lr_)
++    !   mpisz= mpifsz +11*mpicsz +2*mpifsz +5*ngen +4 ! buffer size
+ 
+-      if(mpirank.eq.0) then ! receive data from other ranks
+-         if (.NOT.ALLOCATED(buff)) allocate(buff(mpisz))
+-         call MPI_RECV(buff, mpisz, 
+-     &        MPI_DOUBLE_PRECISION, 
+-     &        MPI_ANY_SOURCE, MPI_ANY_TAG, 
+-     &        MPI_COMM_WORLD,mpistatus,mpiierr)
+-         mpil_=mpistatus(MPI_TAG) ! determine which flux surface
+-         call dcopy(mpifsz,buff(1:mpifsz),1,           
+-     &     f(0:iy+1,0:jx+1,1:ngen,mpil_),1)
+-         call dcopy(mpicsz,buff(mpifsz+ 0*mpicsz+1),1,
+-     &     cal(1:iy,1:jx,1:ngen,  mpil_),1)
+-         call dcopy(mpicsz,buff(mpifsz+ 1*mpicsz+1),1,
+-     &     cbl(1:iy,1:jx,1:ngen,  mpil_),1)
+-         call dcopy(mpicsz,buff(mpifsz+ 2*mpicsz+1),1,
+-     &     ccl(1:iy,1:jx,1:ngen,  mpil_),1)
+-         call dcopy(mpicsz,buff(mpifsz+ 3*mpicsz+1),1,
+-     &     cdl(1:iy,1:jx,1:ngen,  mpil_),1)
+-         call dcopy(mpicsz,buff(mpifsz+ 4*mpicsz+1),1,
+-     &     cel(1:iy,1:jx,1:ngen,  mpil_),1)
+-         call dcopy(mpicsz,buff(mpifsz+ 5*mpicsz+1),1,
+-     &     cfl(1:iy,1:jx,1:ngen,  mpil_),1)
+-         call dcopy(mpicsz,buff(mpifsz+ 6*mpicsz+1),1,
+-     &     eal(1:iy,1:jx,1:ngen,1,mpil_),1)
+-         call dcopy(mpicsz,buff(mpifsz+ 7*mpicsz+1),1,
+-     &     eal(1:iy,1:jx,1:ngen,2,mpil_),1)
+-         call dcopy(mpicsz,buff(mpifsz+ 8*mpicsz+1),1,
+-     &     ebl(1:iy,1:jx,1:ngen,1,mpil_),1)
+-         call dcopy(mpicsz,buff(mpifsz+ 9*mpicsz+1),1,
+-     &     ebl(1:iy,1:jx,1:ngen,2,mpil_),1)
+-         call dcopy(mpicsz,buff(mpifsz+10*mpicsz+1),1,
+-     &     scal(1:iyjx*ngen,      mpil_),1)
+-         !--- Velocity source for radial transport (Note: size=mpifsz)
+-         call dcopy(mpifsz,buff(mpifsz+11*mpicsz+1),1,
+-     &    velsou(0:iy+1,0:jx+1,1:ngen,mpil_),1)
+-         !--- Particle source (NBI or KO) !YuP[2020-02-05] added
+-         !    and other arrays related to KO
+-         in0= mpifsz+11*mpicsz+mpifsz+1
+-         call dcopy(mpifsz,        buff(in0:(in0+mpifsz-1)),1,
+-     &                 source(0:iy+1,0:jx+1,1:ngen,mpil_),1)
+-         in0= in0+mpifsz
+-         sorpw_nbi(1:ngen,mpil_)=  buff(in0:(in0+ngen-1))
+-         in0= in0+ngen
+-         xlncur(1:ngen,mpil_)=     buff(in0:(in0+ngen-1))
+-         in0= in0+ngen
+-         eoe0(1:ngen,mpil_)=       buff(in0:(in0+ngen-1))
+-         in0= in0+ngen
+-         ucrit(1:ngen,mpil_)=      buff(in0:(in0+ngen-1))
+-         in0= in0+ngen
+-         jxcrit(1:ngen,mpil_)= INT(buff(in0:(in0+ngen-1)))
+-         in0= in0+ngen
+-         xlncurt(mpil_)=           buff(in0)
+-         in0= in0+1
+-         srckotot(mpil_)=          buff(in0)
+-         in0= in0+1
+-         elecr(mpil_)=             buff(in0)
+-         in0= in0+1
+-         denfl(mpil_)=             buff(in0)
+-         !PRINT*,'recv: mpirank,mpil_=',mpirank,mpil_
+-      else !-> all other ranks send data to rank 0
+-         if (.NOT.ALLOCATED(buff)) allocate(buff(mpisz))
+-         call dcopy(mpifsz, f(0:iy+1,0:jx+1,1:ngen,lr_),1,
+-     &    buff(1),1)
+-         call dcopy(mpicsz, cal(1:iy,1:jx,1:ngen,  lr_),1,
+-     &    buff(mpifsz+ 0*mpicsz+1),1)
+-         call dcopy(mpicsz, cbl(1:iy,1:jx,1:ngen,  lr_),1,
+-     &    buff(mpifsz+ 1*mpicsz+1),1)
+-         call dcopy(mpicsz, ccl(1:iy,1:jx,1:ngen,  lr_),1,
+-     &    buff(mpifsz+ 2*mpicsz+1),1)
+-         call dcopy(mpicsz, cdl(1:iy,1:jx,1:ngen,  lr_),1,
+-     &    buff(mpifsz+ 3*mpicsz+1),1)
+-         call dcopy(mpicsz, cel(1:iy,1:jx,1:ngen,  lr_),1,
+-     &    buff(mpifsz+ 4*mpicsz+1),1)
+-         call dcopy(mpicsz, cfl(1:iy,1:jx,1:ngen,  lr_),1,
+-     &    buff(mpifsz+ 5*mpicsz+1),1)
+-         call dcopy(mpicsz, eal(1:iy,1:jx,1:ngen,1,lr_),1,
+-     &    buff(mpifsz+ 6*mpicsz+1),1)
+-         call dcopy(mpicsz, eal(1:iy,1:jx,1:ngen,2,lr_),1,
+-     &    buff(mpifsz+ 7*mpicsz+1),1)
+-         call dcopy(mpicsz, ebl(1:iy,1:jx,1:ngen,1,lr_),1,
+-     &    buff(mpifsz+ 8*mpicsz+1),1)
+-         call dcopy(mpicsz, ebl(1:iy,1:jx,1:ngen,2,lr_),1,
+-     &    buff(mpifsz+ 9*mpicsz+1),1)
+-         call dcopy(mpicsz, scal(1:iyjx*ngen,      lr_),1,
+-     &    buff(mpifsz+10*mpicsz+1),1)
+-         !--- Velocity source for radial transport (Note: size=mpifsz)
+-         call dcopy(mpifsz,velsou(0:iy+1,0:jx+1,1:ngen,lr_),1,
+-     &    buff(mpifsz+11*mpicsz+1),1)
+-         !--- Particle source (NBI or KO) !YuP[2020-02-05] added
+-         in0= mpifsz+11*mpicsz+mpifsz+1
+-         call dcopy(mpifsz,source(0:iy+1,0:jx+1,1:ngen,lr_),1,
+-     &                     buff(in0:(in0+mpifsz-1)),1)
+-         in0= in0+mpifsz
+-         buff(in0:(in0+ngen-1))=sorpw_nbi(1:ngen,lr_)
+-         in0= in0+ngen
+-         buff(in0:(in0+ngen-1))=xlncur(1:ngen,lr_)
+-         in0= in0+ngen
+-         buff(in0:(in0+ngen-1))=eoe0(1:ngen,lr_)
+-         in0= in0+ngen
+-         buff(in0:(in0+ngen-1))=ucrit(1:ngen,lr_)
+-         in0= in0+ngen
+-         buff(in0:(in0+ngen-1))=DBLE(jxcrit(1:ngen,lr_))
+-         in0= in0+ngen
+-         buff(in0)=xlncurt(lr_)
+-         in0= in0+1
+-         buff(in0)=srckotot(lr_)
+-         in0= in0+1
+-         buff(in0)=elecr(lr_)
+-         in0= in0+1
+-         buff(in0)=denfl(lr_)
+-         mpitag=lr_ ! tag == flux surface number
+-         call MPI_SEND(buff, mpisz, 
+-     &        MPI_DOUBLE_PRECISION, 
+-     &        0, mpitag, 
+-     &        MPI_COMM_WORLD,mpiierr)
+-         !PRINT*,'SEND: mpirank,lr_=',mpirank,lr_
+-      endif
+-      return
+-      end subroutine send_data
++    !   if(mpirank.eq.0) then ! receive data from other ranks
++    !      if (.NOT.ALLOCATED(buff)) allocate(buff(mpisz))
++    !      call MPI_RECV(buff, mpisz, 
++    !  &        MPI_DOUBLE_PRECISION, 
++    !  &        MPI_ANY_SOURCE, MPI_ANY_TAG, 
++    !  &        MPI_COMM_WORLD,mpistatus,mpiierr)
++    !      mpil_=mpistatus(MPI_TAG) ! determine which flux surface
++    !      call dcopy(mpifsz,buff(1:mpifsz),1,           
++    !  &     f(0:iy+1,0:jx+1,1:ngen,mpil_),1)
++    !      call dcopy(mpicsz,buff(mpifsz+ 0*mpicsz+1),1,
++    !  &     cal(1:iy,1:jx,1:ngen,  mpil_),1)
++    !      call dcopy(mpicsz,buff(mpifsz+ 1*mpicsz+1),1,
++    !  &     cbl(1:iy,1:jx,1:ngen,  mpil_),1)
++    !      call dcopy(mpicsz,buff(mpifsz+ 2*mpicsz+1),1,
++    !  &     ccl(1:iy,1:jx,1:ngen,  mpil_),1)
++    !      call dcopy(mpicsz,buff(mpifsz+ 3*mpicsz+1),1,
++    !  &     cdl(1:iy,1:jx,1:ngen,  mpil_),1)
++    !      call dcopy(mpicsz,buff(mpifsz+ 4*mpicsz+1),1,
++    !  &     cel(1:iy,1:jx,1:ngen,  mpil_),1)
++    !      call dcopy(mpicsz,buff(mpifsz+ 5*mpicsz+1),1,
++    !  &     cfl(1:iy,1:jx,1:ngen,  mpil_),1)
++    !      call dcopy(mpicsz,buff(mpifsz+ 6*mpicsz+1),1,
++    !  &     eal(1:iy,1:jx,1:ngen,1,mpil_),1)
++    !      call dcopy(mpicsz,buff(mpifsz+ 7*mpicsz+1),1,
++    !  &     eal(1:iy,1:jx,1:ngen,2,mpil_),1)
++    !      call dcopy(mpicsz,buff(mpifsz+ 8*mpicsz+1),1,
++    !  &     ebl(1:iy,1:jx,1:ngen,1,mpil_),1)
++    !      call dcopy(mpicsz,buff(mpifsz+ 9*mpicsz+1),1,
++    !  &     ebl(1:iy,1:jx,1:ngen,2,mpil_),1)
++    !      call dcopy(mpicsz,buff(mpifsz+10*mpicsz+1),1,
++    !  &     scal(1:iyjx*ngen,      mpil_),1)
++    !      !--- Velocity source for radial transport (Note: size=mpifsz)
++    !      call dcopy(mpifsz,buff(mpifsz+11*mpicsz+1),1,
++    !  &    velsou(0:iy+1,0:jx+1,1:ngen,mpil_),1)
++    !      !--- Particle source (NBI or KO) !YuP[2020-02-05] added
++    !      !    and other arrays related to KO
++    !      in0= mpifsz+11*mpicsz+mpifsz+1
++    !      call dcopy(mpifsz,        buff(in0:(in0+mpifsz-1)),1,
++    !  &                 source(0:iy+1,0:jx+1,1:ngen,mpil_),1)
++    !      in0= in0+mpifsz
++    !      sorpw_nbi(1:ngen,mpil_)=  buff(in0:(in0+ngen-1))
++    !      in0= in0+ngen
++    !      xlncur(1:ngen,mpil_)=     buff(in0:(in0+ngen-1))
++    !      in0= in0+ngen
++    !      eoe0(1:ngen,mpil_)=       buff(in0:(in0+ngen-1))
++    !      in0= in0+ngen
++    !      ucrit(1:ngen,mpil_)=      buff(in0:(in0+ngen-1))
++    !      in0= in0+ngen
++    !      jxcrit(1:ngen,mpil_)= INT(buff(in0:(in0+ngen-1)))
++    !      in0= in0+ngen
++    !      xlncurt(mpil_)=           buff(in0)
++    !      in0= in0+1
++    !      srckotot(mpil_)=          buff(in0)
++    !      in0= in0+1
++    !      elecr(mpil_)=             buff(in0)
++    !      in0= in0+1
++    !      denfl(mpil_)=             buff(in0)
++    !      !PRINT*,'recv: mpirank,mpil_=',mpirank,mpil_
++    !   else !-> all other ranks send data to rank 0
++    !      if (.NOT.ALLOCATED(buff)) allocate(buff(mpisz))
++    !      call dcopy(mpifsz, f(0:iy+1,0:jx+1,1:ngen,lr_),1,
++    !  &    buff(1),1)
++    !      call dcopy(mpicsz, cal(1:iy,1:jx,1:ngen,  lr_),1,
++    !  &    buff(mpifsz+ 0*mpicsz+1),1)
++    !      call dcopy(mpicsz, cbl(1:iy,1:jx,1:ngen,  lr_),1,
++    !  &    buff(mpifsz+ 1*mpicsz+1),1)
++    !      call dcopy(mpicsz, ccl(1:iy,1:jx,1:ngen,  lr_),1,
++    !  &    buff(mpifsz+ 2*mpicsz+1),1)
++    !      call dcopy(mpicsz, cdl(1:iy,1:jx,1:ngen,  lr_),1,
++    !  &    buff(mpifsz+ 3*mpicsz+1),1)
++    !      call dcopy(mpicsz, cel(1:iy,1:jx,1:ngen,  lr_),1,
++    !  &    buff(mpifsz+ 4*mpicsz+1),1)
++    !      call dcopy(mpicsz, cfl(1:iy,1:jx,1:ngen,  lr_),1,
++    !  &    buff(mpifsz+ 5*mpicsz+1),1)
++    !      call dcopy(mpicsz, eal(1:iy,1:jx,1:ngen,1,lr_),1,
++    !  &    buff(mpifsz+ 6*mpicsz+1),1)
++    !      call dcopy(mpicsz, eal(1:iy,1:jx,1:ngen,2,lr_),1,
++    !  &    buff(mpifsz+ 7*mpicsz+1),1)
++    !      call dcopy(mpicsz, ebl(1:iy,1:jx,1:ngen,1,lr_),1,
++    !  &    buff(mpifsz+ 8*mpicsz+1),1)
++    !      call dcopy(mpicsz, ebl(1:iy,1:jx,1:ngen,2,lr_),1,
++    !  &    buff(mpifsz+ 9*mpicsz+1),1)
++    !      call dcopy(mpicsz, scal(1:iyjx*ngen,      lr_),1,
++    !  &    buff(mpifsz+10*mpicsz+1),1)
++    !      !--- Velocity source for radial transport (Note: size=mpifsz)
++    !      call dcopy(mpifsz,velsou(0:iy+1,0:jx+1,1:ngen,lr_),1,
++    !  &    buff(mpifsz+11*mpicsz+1),1)
++    !      !--- Particle source (NBI or KO) !YuP[2020-02-05] added
++    !      in0= mpifsz+11*mpicsz+mpifsz+1
++    !      call dcopy(mpifsz,source(0:iy+1,0:jx+1,1:ngen,lr_),1,
++    !  &                     buff(in0:(in0+mpifsz-1)),1)
++    !      in0= in0+mpifsz
++    !      buff(in0:(in0+ngen-1))=sorpw_nbi(1:ngen,lr_)
++    !      in0= in0+ngen
++    !      buff(in0:(in0+ngen-1))=xlncur(1:ngen,lr_)
++    !      in0= in0+ngen
++    !      buff(in0:(in0+ngen-1))=eoe0(1:ngen,lr_)
++    !      in0= in0+ngen
++    !      buff(in0:(in0+ngen-1))=ucrit(1:ngen,lr_)
++    !      in0= in0+ngen
++    !      buff(in0:(in0+ngen-1))=DBLE(jxcrit(1:ngen,lr_))
++    !      in0= in0+ngen
++    !      buff(in0)=xlncurt(lr_)
++    !      in0= in0+1
++    !      buff(in0)=srckotot(lr_)
++    !      in0= in0+1
++    !      buff(in0)=elecr(lr_)
++    !      in0= in0+1
++    !      buff(in0)=denfl(lr_)
++    !      mpitag=lr_ ! tag == flux surface number
++    !      call MPI_SEND(buff, mpisz, 
++    !  &        MPI_DOUBLE_PRECISION, 
++    !  &        0, mpitag, 
++    !  &        MPI_COMM_WORLD,mpiierr)
++    !      !PRINT*,'SEND: mpirank,lr_=',mpirank,lr_
++    !   endif
++    !   return
++    !   end subroutine send_data
+ CMPIINSERT_
+ 
+ CMPIINSERT_SUB_SEND_ENTR
+-      subroutine send_entr(k,lefct)  !used in diagimpd (only)
+-      !send/recv entr(k,lefct,l_),pwrrf(1:jx,k,l_),pwrrfs(1:jx,k,l_)
+-      implicit integer (i-n), real*8 (a-h,o-z)
+-      include 'param.h'
+-      include 'comm.h'
+-      include 'mpilib.h'
+-      dimension buff(1+jx)
+-      if(mpirank.eq.0) then ! receive data from other ranks
+-         call MPI_RECV(buff, 1+jx, 
+-     &        MPI_DOUBLE_PRECISION, 
+-     &        MPI_ANY_SOURCE, MPI_ANY_TAG, 
+-     &        MPI_COMM_WORLD,mpistatus,mpiierr)
+-         mpitag=mpistatus(MPI_TAG)
+-         lefct_=mpitag-2 ! determine which lefct was sent
+-         entr(k,lefct_,l_)=buff(1) ! for a given lefct
+-         entr(k,4,l_)=entr(k,4,l_)+buff(1) ! sum
+-         if (lefct_.eq.3) then
+-           call dcopy(jx,buff(2:jx+1),1,pwrrf(1:jx,k,l_),1)
+-           pwrrfs(1,k,l_)=dx(1)*pwrrf(1,k,l_)
+-           do j=2,jx  ! sum over j
+-             pwrrfs(j,k,l_)=pwrrfs(j-1,k,l_)+dx(j)*pwrrf(j,k,l_)
+-           enddo
+-         endif
+-      else !-> all other ranks send data to rank 0
+-         buff(1)=entr(k,lefct,l_) ! for a given lefct
+-         mpisz=1
+-         if (lefct.eq.3) then
+-           call dcopy(jx,pwrrf(1:jx,k,l_),1,buff(2:jx+1),1)
+-           mpisz=1+jx
+-         endif
+-         mpitag=lefct+2 ! 2 added to make mpitag>0 (lefct can be -1)
+-         call MPI_SEND(buff, mpisz, 
+-     &         MPI_DOUBLE_PRECISION, 
+-     &         0, mpitag, 
+-     &         MPI_COMM_WORLD,mpiierr)
+-      endif
+-      return
+-      end subroutine send_entr
++    !   subroutine send_entr(k,lefct)  !used in diagimpd (only)
++    !   !send/recv entr(k,lefct,l_),pwrrf(1:jx,k,l_),pwrrfs(1:jx,k,l_)
++    !   implicit integer (i-n), real*8 (a-h,o-z)
++    !   include 'param.h'
++    !   include 'comm.h'
++    !   include 'mpilib.h'
++    !   dimension buff(1+jx)
++    !   if(mpirank.eq.0) then ! receive data from other ranks
++    !      call MPI_RECV(buff, 1+jx, 
++    !  &        MPI_DOUBLE_PRECISION, 
++    !  &        MPI_ANY_SOURCE, MPI_ANY_TAG, 
++    !  &        MPI_COMM_WORLD,mpistatus,mpiierr)
++    !      mpitag=mpistatus(MPI_TAG)
++    !      lefct_=mpitag-2 ! determine which lefct was sent
++    !      entr(k,lefct_,l_)=buff(1) ! for a given lefct
++    !      entr(k,4,l_)=entr(k,4,l_)+buff(1) ! sum
++    !      if (lefct_.eq.3) then
++    !        call dcopy(jx,buff(2:jx+1),1,pwrrf(1:jx,k,l_),1)
++    !        pwrrfs(1,k,l_)=dx(1)*pwrrf(1,k,l_)
++    !        do j=2,jx  ! sum over j
++    !          pwrrfs(j,k,l_)=pwrrfs(j-1,k,l_)+dx(j)*pwrrf(j,k,l_)
++    !        enddo
++    !      endif
++    !   else !-> all other ranks send data to rank 0
++    !      buff(1)=entr(k,lefct,l_) ! for a given lefct
++    !      mpisz=1
++    !      if (lefct.eq.3) then
++    !        call dcopy(jx,pwrrf(1:jx,k,l_),1,buff(2:jx+1),1)
++    !        mpisz=1+jx
++    !      endif
++    !      mpitag=lefct+2 ! 2 added to make mpitag>0 (lefct can be -1)
++    !      call MPI_SEND(buff, mpisz, 
++    !  &         MPI_DOUBLE_PRECISION, 
++    !  &         0, mpitag, 
++    !  &         MPI_COMM_WORLD,mpiierr)
++    !   endif
++    !   return
++    !   end subroutine send_entr
+ CMPIINSERT_
+ 
+ CMPIINSERT_WTIME

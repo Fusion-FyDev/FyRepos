@@ -1,0 +1,55 @@
+easyblock = 'ConfigureMake'
+
+name = 'FC2K'
+version = '4.13.3'
+versionsuffix = '-Java-%(javaver)s'
+
+homepage = 'https://git.iter.org/projects/IMEX/repos/fc2k'
+description = """Tool to generate Python and Kepler IMAS actors from Fortran and C code."""
+
+toolchain = {'name': 'system', 'version': ''}
+toolchainopts = {'pic': True}
+
+# This is not a public repo, so do some:
+# CI MAGIC:http_auth_hooks.sh
+# source_urls = [
+#     'https://git.iter.org/rest/api/latest/projects/IMEX/repos/%(namelower)s/archive' +
+#     '?at=refs%2Ftags%2F%(version)s&format=zip&download'
+# ]
+# sources = ['%(namelower)s-%(version)s.zip']
+# checksums = ['d287484f069bbf109e75cc0cdcde2115a761fcf6242f2dc1d1785d85599cba2a']
+sources = [
+    
+    {
+    'filename': '%(namelower)s-%(version)s.tar.gz',
+    'git_config': {
+        'url': 'ssh://git@git.iter.org/imex',
+        'repo_name': '%(namelower)s',
+        'tag': '%(version)s',
+    },
+}]
+
+patches=["fc2k-4.10.1-fortran.patch","fc2k-4.13.3.patch"]
+
+builddependencies = [
+    ('ant', '1.10.1', '', ('Java', '1.8')),
+    ('IMAS','3.30.0_4.8.6','',('foss','2020a')),
+]
+
+dependencies = [
+    ('Java', '1.8', '', True),
+    ('JAXFrontCE', '2.75'),
+]
+
+skipsteps = ['configure', 'build']
+
+install_cmd = "ant install -Dcfg.install.fullpath=%(installdir)s -Dcfg.install.module.fullpath=/dev/null"
+
+sanity_check_paths = {
+    'files': ['bin/fc2k', 'build/jar/org.iter.imas.fc2k.jar'],
+    'dirs': ['bin', 'build/jar', 'config', 'lib', 'scripts'],
+}
+
+modextrapaths = {'FC2K': ''}
+
+moduleclass = 'tools'

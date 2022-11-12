@@ -1,0 +1,16 @@
+diff -ruN nemo.orig/arch_loc_imas_gateway.inc nemo/arch_loc_imas_gateway.inc
+--- nemo.orig/arch_loc_imas_gateway.inc	2020-06-03 06:24:13.529907405 +0000
++++ nemo/arch_loc_imas_gateway.inc	2020-06-03 06:27:52.238433245 +0000
+@@ -22,9 +22,9 @@
+   -Wuninitialized -pedantic -freal-4-real-8 -fcheck=bounds,do,mem,pointer,recursion \
+   -DGFORTRAN
+   # -Wall -Werror
+-  INCLUDE=-I. 
+-  LIBS=`pkg-config imas-gfortran --libs` -lpthread -lm
+-  OBJMOD=-J
++  INCLUDE=-I. `pkg-config imas-gfortran ompi-fort  interpos --cflags`
++  LIBS=`pkg-config imas-gfortran ompi-fort interpos --libs` -lpthread -lm
++  OBJMOD=-J$(EBROOTINTERPOS)/include
+   MPIF90=mpifort
+ endif
+ 

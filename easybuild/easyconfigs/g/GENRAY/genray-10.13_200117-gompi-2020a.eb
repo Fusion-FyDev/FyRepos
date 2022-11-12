@@ -1,0 +1,49 @@
+easyblock = 'ConfigureMake'
+
+name = 'genray'
+version = '10.13_200117'
+homepage = 'http://compxco.com/genray.html'
+description = """GENRAY is a general ray tracing code for the calculation of electromagnetic wave \
+                propagation and absorption in the geometrical optics approximation. It provides a \
+                solution of the ray tracing equations in general non-axisymmetric geometry, although \
+                 work to date is with axisymmetric equilibria with added toroidal perturbations.\
+                 Several alternative dispersion functions D are provided in order to ray trace for EC, LH, and ICRF waves.\
+                 Current drive is calculated based on Maxwellian distribution functions. Results are coupled to the CQL3D code \
+                 to provide input for calculation of the rf QL diffusion coefficients."""
+
+toolchain = {'name': 'gompi', 'version': '2020a'}
+sources = [{
+    'filename': 'genray-10.13_200117.tar.gz',
+    'git_config': {
+        'url': 'https://github.com/compxco',
+        'repo_name': 'genray',
+        'tag': '200117',
+    },
+}]
+
+patches = ["%(name)s_easybuild.patch"]
+
+builddependencies = [
+    ('OpenMPI', '4.0.3'),
+]
+dependencies = [
+    ('PGPLOT', '5.2'),
+    ('netCDF', '4.7.4'),
+    ('netCDF-Fortran', '4.5.2'),
+]
+
+skipsteps = ['configure']
+
+parallel = 1
+
+buildopts = " -f makefile_gfortran64; make -f makefile_mpi.gfortran64"
+
+install_cmd = "mkdir -p  %(installdir)s/bin ; cp -r  %(builddir)s/genray/xgenray*.gfortran64  %(installdir)s/bin/ "
+
+sanity_check_paths = {
+    'files':  ['bin/xgenray.gfortran64', 'bin/xgenray_mpi.gfortran64'],
+    'dirs': ['bin']
+}
+# make sure that pdf terminal type is available
+# sanity_check_commands = ["gnuplot -e 'set terminal pdf'"]
+moduleclass = 'phys'

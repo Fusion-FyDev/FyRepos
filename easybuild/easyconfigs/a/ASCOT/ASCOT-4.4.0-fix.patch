@@ -1,0 +1,265 @@
+#  by salmon(yuzhi@ipp.ac.cn)  2020-06-24
+#    - fc2k:compiler  ifort => gfortran
+#    - build_imas.sh: send log to standard output
+#    - add machine file for foss-2019b toolchain:    host_specifics_foss-2019.mk	
+#    - fix typo in ids/afsi2ids.F90 : %process% => %process(1)%
+#
+diff -ruN --no-dereference ASCOT-4.4.0.orig/build_imas.sh ASCOT-4.4.0.patched/build_imas.sh
+--- ASCOT-4.4.0.orig/build_imas.sh	2020-06-24 12:10:23.426938489 +0800
++++ ASCOT-4.4.0.patched/build_imas.sh	2020-06-24 14:26:33.773000000 +0800
+@@ -11,56 +11,55 @@
+ #--------------------------------------------------------
+ # Serial libraries - no MPI
+ #--------------------------------------------------------
++setenv MACHINE foss-2019
+ 
+-rm -f log.build >& /dev/null
+-
+-echo "STARTED: "`date` >& log.build
+-echo "----------------------------------------------------------------" >>& log.build
+-echo "Cleaning - preparing for compiling without MPI                  " >>& log.build
+-echo "----------------------------------------------------------------" >>& log.build
++echo "STARTED: "`date` 
++echo "----------------------------------------------------------------" 
++echo "Cleaning - preparing for compiling without MPI                  " 
++echo "----------------------------------------------------------------" 
+ echo "Cleaning - preparing for compiling without MPI " `date`
+-make NO_MPI=yes clean_pspline clean_deps >>& log.build
+-
++make NO_MPI=yes clean_pspline clean_deps 
++make NO_MPI=yes cubpack/CUBPACK/libcubpack.a
+ 
+-echo "----------------------------------------------------------------" >>& log.build
+-echo "Builing bbnbi.a                                                 " >>& log.build
+-echo "----------------------------------------------------------------" >>& log.build
++echo "----------------------------------------------------------------" 
++echo "Builing bbnbi.a                                                 " 
++echo "----------------------------------------------------------------" 
+ echo "--Building bbnbi.a " `date`
+-make NO_MPI=yes actors/bbnbi.a >>& log.build
++make NO_MPI=yes actors/bbnbi.a 
+ 
+ 
+-echo "----------------------------------------------------------------" >>& log.build
+-echo "Building afsiFusionSourceIntegrator.a                           " >>& log.build
+-echo "----------------------------------------------------------------" >>& log.build
++echo "----------------------------------------------------------------" 
++echo "Building afsiFusionSourceIntegrator.a                           " 
++echo "----------------------------------------------------------------" 
+ echo "--Building afsiFusionSourceIntegrator.a " `date`
+-make NO_MPI=yes actors/afsiFusionSourceIntegrator.a >> & log.build
++make NO_MPI=yes actors/afsiFusionSourceIntegrator.a 
+ 
+ 
+-echo "----------------------------------------------------------------" >>& log.build
+-echo "Builing ascot4serial.a                                          " >>& log.build
+-echo "----------------------------------------------------------------" >>& log.build
++echo "----------------------------------------------------------------" 
++echo "Builing ascot4serial.a                                          " 
++echo "----------------------------------------------------------------" 
+ echo "--Building ascot4serial.a " `date`
+-make NO_MPI=yes actors/ascot4serial.a >>& log.build
++make NO_MPI=yes actors/ascot4serial.a 
+ 
+ 
+ #--------------------------------------------------------
+ # Parallel libraries - with MPI
+ #--------------------------------------------------------
+ 
+-echo "----------------------------------------------------------------" >>& log.build
+-echo "Cleaning - preparing for compiling with MPI                     " >>& log.build
+-echo "----------------------------------------------------------------" >>& log.build
++echo "----------------------------------------------------------------" 
++echo "Cleaning - preparing for compiling with MPI                     " 
++echo "----------------------------------------------------------------" 
+ echo "Cleaning - preparing for compiling with MPI " `date` 
+ 
+ # Note that when doing "make clean" all a-files in actors/ are removed, 
+ # thus we need to back these up in a temporary directory before cleaning:
+-rm -rf actors/__tmp_libraries__ >>& /dev/null
++rm -rf actors/__tmp_libraries__ 
+ mkdir  actors/__tmp_libraries__
+ mv actors/*.a  actors/__tmp_libraries__
+ mv cubpack/CUBPACK/libcubpack.a actors/__tmp_libraries__/
+ 
+ # The files actors/*.a are backed up; now we can remove all NO_MPI compilation
+-make clean_deps >>& log.build
++make clean_deps 
+ 
+ # Restore backed up file to actors/*.a
+ mv actors/__tmp_libraries__/libcubpack.a cubpack/CUBPACK/
+@@ -68,11 +67,11 @@
+ rm -rf actors/__tmp_libraries__
+ 
+ 
+-echo "----------------------------------------------------------------" >>& log.build
+-echo "Building ascot4parallel.a                                       " >>& log.build
+-echo "----------------------------------------------------------------" >>& log.build
++echo "----------------------------------------------------------------" 
++echo "Building ascot4parallel.a                                       " 
++echo "----------------------------------------------------------------" 
+ echo "--Building ascot4parallel.a " `date`
+-make actors/ascot4parallel.a >>& log.build
++make actors/ascot4parallel.a 
+ 
+-echo "COMPLETED: " `date` >>& log.build
++echo "COMPLETED: " `date` 
+ echo "COMPLETED: " `date`
+diff -ruN --no-dereference ASCOT-4.4.0.orig/host_specifics_foss-2019.mk ASCOT-4.4.0.patched/host_specifics_foss-2019.mk
+--- ASCOT-4.4.0.orig/host_specifics_foss-2019.mk	1970-01-01 08:00:00.000000000 +0800
++++ ASCOT-4.4.0.patched/host_specifics_foss-2019.mk	2020-06-24 14:26:06.854365270 +0800
+@@ -0,0 +1,129 @@
++# module load IMAS/3.20.0-3.8.9
++# module load FC2K/4.5.0
++# module load XMLlib
++# module load Kepler
++# 
++# Default for Gateway is that actors are compiled instead of standalone code.
++# Define some value for this if you want to compile standalone code on Gateway.
++STANDALONE_CODE=
++
++IGNORE_PLASMA_QUASINEUTRALITY=.true.
++
++ifndef STANDALONE_CODE
++  $(info IMAS environment loaded)
++  IDS=yes
++endif
++
++#USE_HDF5_ENVIRONMENT = yes
++
++# HDF5 is typically not used in IDS environment.
++ifndef USE_HDF5_LIBRARY
++ifeq ($(CPO)$(IDS),)
++  $(info Using HDF5 library)
++  USE_HDF5_LIBRARY = yes
++endif
++endif
++
++# Please choose a compiler, (GFORTRAN compiles, intel has been better tested with FC2K and others...)
++
++#FORTRAN_VARIANT=G95
++FORTRAN_VARIANT=GCC
++
++# If you want to make floating point exception checks, uncomment the following line.
++# It might be incompatible with kepler...
++CATCH_FLOATING_POINT_EXCEPTIONS=true
++
++CFLAGS = -fPIC
++CFFLAGS = $(CFLAGS)
++
++ifeq ($(FORTRAN_VARIANT),Intel)
++  FC=ifort
++  MPIFC=mpiifort
++  CC=icc
++  MPICC=mpiicc
++  XIAR=ar
++
++  OBJCODE=ifort
++
++  ifdef DEBUG
++    OPTIONS=-fPIC -g -assume no2underscore -shared-intel -traceback -check bounds -fp-stack-check
++  else
++    OPTIONS=-fPIC -O2
++  endif
++  ifdef CATCH_FLOATING_POINT_EXCEPTIONS
++    OPTIONS+=-fpe0 -traceback
++  endif
++endif
++
++
++
++
++# Normal options, including optimization
++#
++# NOTE: IN KEPLER ENVIRONMENT, -fPIC OPTION MUST BE USED.
++
++
++# Compiler and library options for gfortran
++ifeq ($(FORTRAN_VARIANT),GCC)
++   FC=gfortran
++   MPIFC=mpif90  
++   CC=gcc
++   MPICC=mpicc 
++   XIAR=ar
++   OPTIONS=-C -g -fbounds-check -c -fPIC -std=f95 -fno-second-underscore -ffree-line-length-huge
++   OPTIONS = -fPIC -g #-O3
++   OBJCODE=gfortran
++  ifdef CATCH_FLOATING_POINT_EXCEPTIONS
++    OPTIONS+=-ffpe-trap=invalid,zero,overflow -Wall
++  endif
++endif
++
++ifdef IDS
++LIBS_UAL=$(shell pkg-config --libs imas-$(FC) imas-identifiers-$(FC) imas-lowlevel xmllib )
++INCLUDE_UAL=$(shell pkg-config --cflags imas-$(FC) imas-identifiers-$(FC) imas-lowlevel xmllib )
++OPTIONS +=  -I./$(IDS_DIR)
++endif
++
++ifneq ($(CPO)$(IDS),)
++OPTIONS +=  $(INCLUDE_UAL) -I./$(ASCOT_DIR)
++LDFLAGS +=  $(LIBS_UAL)
++endif
++
++ifdef IDS
++OPTIONS +=  -I./$(IDS_DIR)
++endif
++
++# Fixed and free form specific stuff
++F77_OPTIONS =
++F95_OPTIONS =
++
++# Linker flags:
++#LDFLAGS = 
++
++
++
++# The path has to be set for each machine, the wrapper does not seem to work 
++# with a preprocessor directive in hist_module.F90, hence the output of -show 
++# has been added to host_specifics_*.mk.
++
++
++
++ifdef USE_HDF5_LIBRARY
++HDF5_INCL = $(shell    pkg-config --cflags hdf5-$(OBJCODE) )
++HDF5_LINK = $(shell    pkg-config --libs   hdf5-$(OBJCODE) )
++HDF5_LINK += -lhdf5 -lhdf5_hl
++endif
++
++
++TO_STRICT_COMPILER_PARAMETERS=-Wextra -std=gnu -pedantic $(SVNDEF)
++#mpi_stubs/mpi_stubs.o : mpi_stubs/mpi_stubs.f90
++#	$(filter-out $(TO_STRICT_COMPILER_PARAMETERS),$(MPIFC) -c $(FFLAGS)  $< -o $@)
++
++FC_PSPLINE=$(filter-out $(TO_STRICT_COMPILER_PARAMETERS),$(FC))
++FFLAGS_PSPLINE=$(filter-out $(TO_STRICT_COMPILER_PARAMETERS),$(FFLAGS))
++
++
++# On the 64 bit machines at JET the MPICC and MPIF90 compilers are from 
++# different vendors!!
++# Luckily, MPI is not used anywhere in the C source
++MPICC=$(CC)
+diff -ruN --no-dereference ASCOT-4.4.0.orig/ids/afsi2ids.F90 ASCOT-4.4.0.patched/ids/afsi2ids.F90
+--- ASCOT-4.4.0.orig/ids/afsi2ids.F90	2020-06-24 12:10:23.425938468 +0800
++++ ASCOT-4.4.0.patched/ids/afsi2ids.F90	2020-06-24 14:29:41.174775802 +0800
+@@ -170,8 +170,8 @@
+              ! Species
+ 
+              allocate(distsource%source(iIdsSource)%process(1))
+-             allocate(distsource%source(iIdsSource)%process%type%name(1))
+-             allocate(distsource%source(iIdsSource)%process%type%description(1))
++             allocate(distsource%source(iIdsSource)%process(1)%type%name(1))
++             allocate(distsource%source(iIdsSource)%process(1)%type%description(1))
+              distsource%source(iIdsSource)%process(1)%type%index = &
+                 nuclearId(iReaction)
+              distsource%source(iIdsSource)%process(1)%type%name = &
+@@ -431,8 +431,8 @@
+       ! Species
+ 
+       allocate(distsource%source(iIdsSource)%process(1))
+-      allocate(distsource%source(iIdsSource)%process%type%name(1))
+-      allocate(distsource%source(iIdsSource)%process%type%description(1))
++      allocate(distsource%source(iIdsSource)%process(1)%type%name(1))
++      allocate(distsource%source(iIdsSource)%process(1)%type%description(1))
+       distsource%source(iIdsSource)%process(1)%type%index = IDsource%nuclear
+       distsource%source(iIdsSource)%process(1)%type%name = &
+          IDsource%name(IDsource%nuclear)

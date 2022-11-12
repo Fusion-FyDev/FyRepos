@@ -1,0 +1,63 @@
+easyblock = 'ConfigureMake'
+
+name = 'PSPLINE'
+version = '2.0.0'
+
+homepage = 'https://github.com/PrincetonUniversity/pspline'
+description = """Princeton Spline and Hermite Cubic Interpolation Routines"""
+
+toolchain = {'name': 'foss', 'version': '2019b'}
+toolchainopts = {'pic': True, 'usempi': True}
+
+source_urls = [
+    'https://github.com/PrincetonUniversity/pspline/archive/'
+]
+sources = [{
+    'filename': "pspline-2.0.0-rc.5.tar.gz",
+    'download_filename': '%(namelower)s-%(version)s.tar.gz',
+}]
+patches = ['%(name)s-%(version)s-install.patch']
+# checksums = [
+#     '07df37236b035f7c129ffc38812f9966d9bf5025c84d8300863950126f8203f5',  # pspline-2.0.0.tar.gz
+#     '8fb899ca25510431bf877cc93546b8a7fad23ef8807795f61c2a20ba95fcf82a',  # PSPLINE-2.0.0-install.patch
+# ]
+
+dependencies = [('netCDF-Fortran', '4.5.2')]
+
+skipsteps = ['configure']
+
+parallel = 1
+
+prebuildopts  = 'L_NETCDF=`nf-config --flibs` '
+prebuildopts += 'I_NETCDF=`nc-config --includedir` '
+prebuildopts += 'NETCDF_FLAGS=`nc-config --fflags`'
+
+buildopts = 'shared all'
+
+installopts = 'PREFIX=%(installdir)s'
+
+sanity_check_paths = {
+    'files': ['lib/libpspline.a',
+              'include/ezspline.mod',
+              'include/czspline1d.mod',
+              'include/czspline2d.mod',
+              'include/czspline3d.mod',
+              'include/czspline_capi.h',
+              'include/ezspline.mod',
+              'include/ezspline_obj.mod',
+              'include/ezspline_type.mod',
+              'include/psp_precision_mod.mod',
+              'test/czspline_test',
+              'test/czspline_test.output',
+              'test/ezspline_test',
+              'test/ezspline_test.ref',
+              'test/lookup_test',
+              'test/lookup_test.output',
+              'test/pspltest',
+              'test/pspltest.output',
+              'test/qk_pspline',
+              'test/qk_pspline.output'],
+    'dirs': ['include', 'lib', 'test']
+}
+
+moduleclass = 'data'

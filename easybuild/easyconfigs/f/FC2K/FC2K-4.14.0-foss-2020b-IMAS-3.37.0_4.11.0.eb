@@ -1,0 +1,64 @@
+easyblock = 'ConfigureMake'
+
+name = 'FC2K'
+version = '4.14.0'
+local_imasver = '3.37.0_4.11.0'
+versionsuffix = '-IMAS-'+local_imasver 
+
+homepage = 'https://git.iter.org/projects/IMEX/repos/fc2k'
+description = """Tool to generate Python and Kepler IMAS actors from Fortran and C code."""
+
+toolchain = {'name': 'foss', 'version': '2020b'}
+toolchainopts = {'pic': True}
+
+# source_urls = [
+#     'https://git.iter.org/rest/api/latest/projects/IMEX/repos/%(namelower)s/archive' +
+#     '?at=refs%2Ftags%2F%(version)s&format=zip&download'
+# ]
+# sources = ['%(namelower)s-%(version)s.tar.gz']
+sources = [
+    
+    {
+    'filename': '%(namelower)s-%(version)s.tar.gz',
+    'git_config': {
+        'url': 'ssh://git@git.iter.org/imex',
+        'repo_name': '%(namelower)s',
+        'tag': '%(version)s',
+    },
+}]
+
+# FIXED : scripts/TemplateF.py: idsstruct  does not meet the Fortran standards and has become invalid after gcc 8
+#   compilation failed[gcc 8.3.0] : Error: Component 'ids' of BIND(C) type at (1) must have length one
+#  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=84885
+# patches=["fc2k-4.10.1-fortran.patch"]
+
+#checksums = ['cf36abef5021cdf9d67dc14664f3a1618d8964168192093e10f980a456c10caa']
+
+# Run eb with EBROOTIMAS=/work/imas/core/IMAS/3.28.0-4.7.2, in case of
+# get_software_root software root for IMAS was not found in environment
+# CI MAGIC:fake_unload_latest_IMAS.sh
+
+builddependencies = [
+    ('binutils', '2.35','',True),
+    ('ant', '1.10.11', '-Java-%(javaver)s',   True),
+]
+
+dependencies = [
+    ('IMAS', local_imasver),
+    ('Java',  '13',None,True),
+    ('JAXFrontCE', '2.75','',True),
+    ('XMLlib', '3.3.1'),   
+]
+
+skipsteps = ['configure', 'build']
+
+install_cmd = "ant install -Dcfg.install.fullpath=%(installdir)s -Dcfg.install.module.fullpath=/dev/null"
+
+sanity_check_paths = {
+    'files': ['bin/fc2k', 'build/jar/org.iter.imas.fc2k.jar'],
+    'dirs': ['bin', 'build/jar', 'config', 'lib', 'scripts'],
+}
+
+modextrapaths = {'FC2K': ''}
+
+moduleclass = 'tools'

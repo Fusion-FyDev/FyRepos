@@ -1,0 +1,19 @@
+--- Makefile.define_FLAGS.orig	2022-09-11 19:14:52.358995000 +0800
++++ Makefile.define_FLAGS	2022-09-11 19:14:35.573728000 +0800
+@@ -462,11 +462,11 @@
+ 
+   ifeq ($(CHEASE_F90),gfortran)
+     F90 = gfortran
+-    F90FLAGS = -g -O3 -Wall -ffree-line-length-none `pkg-config imas-gfortran interpos --cflags`
+-    F90FLAGS_O0 = -g -O0 -Wall -ffree-line-length-none `pkg-config imas-gfortran interpos --cflags`
+-    F90FLAGS_parser = -O0 -ffree-line-length-none
+-    F90FLAGS_parser_nor8 = -O0 -ffree-line-length-none
+-    LDFLAGS = -g -O0 -ffree-line-length-none
++    F90FLAGS = -fPIC -O3 -Wall -ffree-line-length-none `pkg-config imas-gfortran interpos --cflags`
++    F90FLAGS_O0 = -fPIC -O0 -Wall -ffree-line-length-none `pkg-config imas-gfortran interpos --cflags`
++    F90FLAGS_parser = -O0 -fPIC -ffree-line-length-none
++    F90FLAGS_parser_nor8 = -O0 -fPIC -ffree-line-length-none
++    LDFLAGS = -fPIC -O0 -ffree-line-length-none
+     OBJS_IMASlocal =
+     LIBS =
+     LIBS = `pkg-config imas-gfortran --libs`

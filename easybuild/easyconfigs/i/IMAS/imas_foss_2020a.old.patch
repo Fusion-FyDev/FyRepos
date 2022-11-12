@@ -1,0 +1,104 @@
+diff -ruN --no-dereference foss-2020a.orig/installer/site-config/Makefile.default foss-2020a/installer/site-config/Makefile.default
+--- foss-2020a.orig/installer/site-config/Makefile.default	2021-01-12 14:17:52.000000000 +0800
++++ foss-2020a/installer/site-config/Makefile.default	2021-01-13 00:29:04.085312700 +0800
+@@ -1,46 +1,36 @@
++# Site configuration Makefile for ASIPP Organization's HPC Cluster ShenMa
++# diff -ruN --no-dereference installer.orig/site-config/Makefile.fuyun installer/site-config/Makefile.fuyun
+ 
+-## Site configuration Makefile for ITER Organization's HPC Cluster
+-
+-# This file should be maintained by the administrator of the site.
+-# Users should modify Makefile.config for their personal overrides.
+-
+-IMAS_HOME ?= /work/imas
+-
+-# Toggle what language interfaces are (not) built by default
+-# Use ?= notation to allow user override from command line.
+-IMAS_CPP ?= yes
+-IMAS_FORTRAN ?= yes
+-IMAS_GFORTRAN ?= yes # FORTRAN compiler
+-IMAS_IFORT ?= no # FORTRAN compiler
+-IMAS_G95 ?= no # FORTRAN compiler
+-IMAS_NAGFOR ?= no # FORTRAN compiler
+-IMAS_PGI ?= no # FORTRAN compiler
+-IMAS_JAVA ?= yes
+-IMAS_MATLAB ?= no
+-IMAS_MEX ?= no
+-IMAS_PYTHON ?= yes
+-IMAS_PYTHON2 ?= no
+-IMAS_PYTHON3 ?= yes
+-
+-# Buid with support for HDC
+-IMAS_HDC ?= no
++IMAS_CPP = yes
++IMAS_FORTRAN = yes
++IMAS_GFORTRAN = yes # FORTRAN compiler
++IMAS_IFORT = no # FORTRAN compiler
++IMAS_G95 = no # FORTRAN compiler
++IMAS_NAGFOR = no # FORTRAN compiler
++IMAS_PGI = no # FORTRAN compiler
++IMAS_JAVA = no
++IMAS_MATLAB = no
++IMAS_MEX = no
++IMAS_PYTHON = yes
++IMAS_PYTHON2 = no
++IMAS_PYTHON3 = yes
+ 
+ # Build with MDSplus backend
+-IMAS_MDSPLUS ?= yes
+-
++IMAS_MDSPLUS = yes
+ # Build with HDF5 backend
+-IMAS_HDF5 ?= no # Broken
++IMAS_HDF5 = no # Broken
+ 
+ # Build with UDA backend
+-IMAS_UDA ?= no
++IMAS_UDA = no
++IMAS_HDC = no
++
+ 
+-# Environment modules dependency requirements (runtime dependencies)
+-# Specify in order, alternating the <name to test> and the <name to load> of each module.
+-# <name to test> is used to test if the module is loaded already, and its corresponding
+-# <name to load> is the full name+version of the preferred module to load if test failed.
+-# This string is a {TCL list of words}.
+ # Include \n to have pretty linebreaks in the modulefile.
+ MODULEFILE_DEPENDENCIES={\n\
++    foss         foss/2020a \n\
++    Python       Python/3.8.2-GCCcore-9.3.0 \n\
++    MDSplus      MDSplus/7.96.12-GCCcore-9.3.0  \n\
++    Blitz++      Blitz++/1.0.2 \n\
+ }
+ 
+ # Test for this jar file in the CLASSPATH:
+@@ -50,20 +40,21 @@
+ BLITZPCFILE=blitz.pc
+ 
+ # Test that these module names are loaded for UAL compilation (compile time):
+-UAL_MODULES =
++UAL_MODULES = Blitz++
+ # Additionally test for these module names in case of IMAS_PGI=yes IMAS_IFORT=yes,.. see below.
+-UAL_MODULES_CPP =
+-UAL_MODULES_MDSPLUS =
+-UAL_MODULES_UDA =
++UAL_MODULES_MDSPLUS = MDSplus
++UAL_MODULES_UDA = UDA
++UAL_MODULES_HDC = 
+ UAL_MODULES_G95 =
+ UAL_MODULES_NAGFOR =
+ UAL_MODULES_PGI =
+ UAL_MODULES_INTEL =
+-UAL_MODULES_JAVA =
++UAL_MODULES_JAVA = 
+ UAL_MODULES_PYTHON2 =
+-UAL_MODULES_PYTHON3 =
++UAL_MODULES_PYTHON3 = Python
+ 
+-# Additional search path to local IMAS scripts that is added to $PATH by IMAS module
++# Additional search path to local IMAS scripts that is added to $PATH by imas module
+ IMAS_EXTRA_PATH = $(IMAS_HOME)/extra/bin
+ IMAS_EXTRA_MATLABPATH = $(IMAS_HOME)/extra/matlab
+-IMAS_EXTRA_PYTHONPATH = $(IMAS_HOME)/extra/bin
++IMAS_EXTRA_PYTHONPATH = $(IMAS_HOME)/core/pyual:$(IMAS_HOME)/extra/bin
++ 

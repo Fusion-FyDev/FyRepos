@@ -1,0 +1,12 @@
+diff -ruN fruit_3.4.3.orig/fruit_processor_gem/rakefile fruit_3.4.3/fruit_processor_gem/rakefile
+--- fruit_3.4.3.orig/fruit_processor_gem/rakefile	2020-06-03 00:51:37.588314169 +0000
++++ fruit_3.4.3/fruit_processor_gem/rakefile	2020-06-03 01:29:53.773905173 +0000
+@@ -69,7 +69,7 @@
+   puts "  especially on cygwin before ruby 2.1, try "
+   puts "    export LANG=\"\""
+   puts "  before gem install"
+-  sh "gem install pkg/#{spec.name}-#{spec.version}.gem"
++  sh "gem install pkg/#{spec.name}-#{spec.version}.gem --install-dir #{ENV['PREFIX']}"
+ end
+ 
+ task :test do

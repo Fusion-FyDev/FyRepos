@@ -1,0 +1,39 @@
+easyblock = 'ConfigureMake'
+
+name = 'XMLlib'
+version = '3.3.0'
+
+homepage = 'https://git.iter.org/projects/LIB/repos/xmllib'
+description = """Library to assist parsing of XML data"""
+
+toolchain = {'name': 'GCCcore', 'version': '8.3.0'}
+
+# source_urls = [
+#     'https://git.iter.org/rest/api/latest/projects/LIB/repos/%(namelower)s/archive?'
+#     'at=refs%2Ftags%2F%(version)s&format=zip&download'
+# ]
+sources = [
+    
+    {
+    'filename': '%(namelower)s-%(version)s.tar.gz',
+    'git_config': {
+        'url': 'ssh://git@git.iter.org/lib',
+        'repo_name': 'xmllib',
+        'tag': '%(version)s',
+    },
+}]
+# sources = [SOURCELOWER_ZIP]
+# checksums = ['246cf716ab384a582c203184cc5a8a96dc9bc597069b5fafd8bf5aa4dcaf878a']
+
+dependencies = [('libxml2', '2.9.9')]
+
+preconfigopts = 'echo "%s" > .tarball-version && ./bootstrap &&' % (version)
+configopts = '--enable-tests'
+runtest = 'check'
+
+sanity_check_paths = {
+    'files': ['lib/libxmllib.a', 'include/xmllib/xmllib_types.mod'],
+    'dirs':  ['include', 'lib/pkgconfig']
+}
+
+moduleclass = 'data'

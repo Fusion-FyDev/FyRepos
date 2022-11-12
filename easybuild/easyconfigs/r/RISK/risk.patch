@@ -1,0 +1,30 @@
+diff -ruN risk.orig/arch_loc_imas_gateway.inc risk/arch_loc_imas_gateway.inc
+--- risk.orig/arch_loc_imas_gateway.inc	2020-06-03 05:49:13.370049356 +0000
++++ risk/arch_loc_imas_gateway.inc	2020-06-03 06:18:37.429177685 +0000
+@@ -23,11 +23,11 @@
+   -Wuninitialized -pedantic -freal-4-real-8 -fcheck=bounds,do,mem,pointer,recursion \
+   -DGFORTRAN
+   # -Wall -Werror
+-  INCLUDE=-I. `pkg-config imas-gfortran --cflags` 
+-  LIBS=`pkg-config imas-gfortran --libs` -lpthread -lm
+-# \
++  INCLUDE=-I. `pkg-config imas-gfortran ompi-fort  interpos --cflags` 
++  LIBS=`pkg-config imas-gfortran ompi-fort  interpos --libs` -lpthread -lm
++#  
+ #  -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_sequential -lmkl_core
+-  OBJMOD=-J
++  OBJMOD=-J$(EBROOTINTERPOS)/include
+   MPIF90=mpifort
+ endif
+ 
+diff -ruN risk.orig/fc2k/risk_ids_bamboo_gfortran.xml risk/fc2k/risk_ids_bamboo_gfortran.xml
+--- risk.orig/fc2k/risk_ids_bamboo_gfortran.xml	2020-06-03 05:49:13.374049366 +0000
++++ risk/fc2k/risk_ids_bamboo_gfortran.xml	2020-06-03 06:15:59.868887287 +0000
+@@ -106,6 +106,7 @@
+   <libraries>
+     <string>__EBROOTFRUIT__/lib/libfruit.a</string>
+     <string>grid_library/gfortran/lib/libimas_ggd.a</string>
++    <string>interpfiles/libinterp2.a</string>
+   </libraries>
+   <systemLibraries>
+     <string>xmllib</string>

@@ -1,0 +1,80 @@
+diff -ruN chease.orig/fc2k_imas/chease.xml chease/fc2k_imas/chease.xml
+--- chease.orig/fc2k_imas/chease.xml	2020-06-02 23:32:36.354684649 +0000
++++ chease/fc2k_imas/chease.xml	2020-06-02 23:45:20.080868123 +0000
+@@ -57,7 +57,7 @@
+   <actorDoc>The computer code CHEASE is developed at the Centre de Recherches en Physique des Plasmas, Ecole Polytechnique Fédérale de Lausanne (CRPP/EPFL), Switzerland. &amp;#xA;&amp;#xA;CHEASE is an accurate fixed boundary equilibrium solver, flexible and designed to produce interface with many different codes.&amp;#xA;&amp;#xA;CHEASE is an open-source code available only for non-commercial usage. The present user can run CHEASE under the additional conditions that:&amp;#xA;&amp;#xA;1.- The code does not change its name even if modified.&amp;#xA;&amp;#xA;2.- Modifications of the code that are developed are made available to the CRPP.&amp;#xA;&amp;#xA;3.- Results produced with the original or the modified versions of CHEASE should appropriately reference the original publications:&amp;#xA;&amp;#xA;       H. Lütjens, A. Bondeson, O. Sauter, Comput. Phys. Commun. 97 (1996) 219&amp;#xA;&amp;#xA;4.- CHEASE nor their progeny may be transferred or made available to other research groups without the written authorisation from the CRPP.&amp;#xA;&amp;#xA;Additional help can be obtained from Olivier.Sauter@epfl.ch</actorDoc>
+   <actorFolder>org/iter/imas/chease</actorFolder>
+   <semantic>demo</semantic>
+-  <compiler>ifort</compiler>
++  <compiler>gfortran</compiler>
+   <libraries/>
+   <systemLibraries>
+     <string>xmllib</string>
+diff -ruN chease.orig/src-f90/chease_imas_vDD3_5.3PUAL3_3.8.f90 chease/src-f90/chease_imas_vDD3_5.3PUAL3_3.8.f90
+--- chease.orig/src-f90/chease_imas_vDD3_5.3PUAL3_3.8.f90	2020-06-02 23:32:36.370684687 +0000
++++ chease/src-f90/chease_imas_vDD3_5.3PUAL3_3.8.f90	2020-06-02 23:35:34.387130786 +0000
+@@ -833,7 +833,7 @@
+       call flush(0)
+       equil_out => eqchease_out
+       call copy_itm_to_ids_equilibrium(equil_out,equil_out_ids,flag_status,extra_data_itm_to_ids,iextra_option)
+-      print *,'equil_out_ids.time= ',equil_out_ids.time
++      print *,'equil_out_ids.time= ',equil_out_ids%time
+       return
+     end if
+   end do
+diff -ruN chease.orig/src-f90/chease_input_choices_default.xml chease/src-f90/chease_input_choices_default.xml
+--- chease.orig/src-f90/chease_input_choices_default.xml	2020-06-02 23:32:36.370684687 +0000
++++ chease/src-f90/chease_input_choices_default.xml	2020-06-02 23:35:52.379178813 +0000
+@@ -61,7 +61,7 @@
+       <pol_packing_auto>
+         <nmeshpol>1</nmeshpol>
+         <solpdpol>0.25</solpdpol>
+-      </pol_packing_auto>>
++      </pol_packing_auto>
+     </various_mesh_packing>
+   </mesh_characteristics>
+   <plasma_boundary>
+diff -ruN chease.orig/src-f90/Makefile.define_FLAGS chease/src-f90/Makefile.define_FLAGS
+--- chease.orig/src-f90/Makefile.define_FLAGS	2020-06-02 23:32:36.366684678 +0000
++++ chease/src-f90/Makefile.define_FLAGS	2020-06-02 23:47:13.253230713 +0000
+@@ -403,6 +403,7 @@
+ 
+ ifeq ($(CHEASE_MACHINE),ITER)
+  # hpc-login4.iter.org
++   ifeq ($(CHEASE_F90),g95)
+     F90 = g95
+     F90FLAGS = -r8  -ftrace=full -fno-second-underscore -fPIC `pkg-config imas-gfortran interpos --cflags`
+     F90FLAGS = -O3 -r8  -ftrace=full -fno-second-underscore -fPIC `pkg-config imas-gfortran interpos --cflags`
+@@ -419,15 +420,18 @@
+     LIBS = 
+     OBJS_IMASlocal =
+     OBJS_IMASlocal =
+-
++  endif
++  ifeq ($(CHEASE_F90),gfortran)
+     F90 = gfortran
+-    F90FLAGS = -g -O0 -Wall -ffree-line-length-none `pkg-config imas-gfortran interpos --cflags`
+-    F90FLAGS_parser = -O0 -ffree-line-length-none
+-    F90FLAGS_parser_nor8 = -O0 -ffree-line-length-none
+-    LDFLAGS = -g -O0 -ffree-line-length-none
++    PACKAGES=imas-gfortran interpos 
++    F90FLAGS =-O3  -ffree-line-length-none -fPIC `pkg-config $(PACKAGES) --cflags`
++    F90FLAGS_parser = -O0 -fPIC -ffree-line-length-none
++    F90FLAGS_parser_nor8 = -O0 -fPIC -ffree-line-length-none
++    LDFLAGS =   -O3 -fPIC -ffree-line-length-none
+     OBJS_IMASlocal =
+     LIBS = 
+-
++  endif
++  ifeq ($(CHEASE_F90),ifort)
+     F90 = ifort
+     PACKAGES = imas-ifort
+     F90FLAGS = -O3 -r8 -automatic -xT -parallel `pkg-config imas-ifort interpos --cflags`
+@@ -453,6 +457,7 @@
+     LIBS_HDF5 =  -L$(FUTILS) -lfutils -L$(H5DIR)/lib -lhdf5_fortran -lhdf5 -lz $(LIBS)
+     OBJS_IMASlocal =
+     OBJS_IMASlocal =
++  endif
+ 
+ endif
+ 

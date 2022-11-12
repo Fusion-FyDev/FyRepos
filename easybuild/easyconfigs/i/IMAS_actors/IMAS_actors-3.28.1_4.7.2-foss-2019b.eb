@@ -1,0 +1,33 @@
+easyblock = 'Bundle'
+
+name = 'IMAS_actors'
+
+local_uda = '2.3.0'
+local_dd = '3.28.1'
+local_al = '4.7.2'
+version= local_dd+"_"+local_al
+# versionsuffix = '-Python-%(pyver)s'
+
+homepage = 'https://confluence.iter.org/display/IMP'
+
+description = "Integrated Modelling & Analysis Suite (IMAS) AL=%(local_al)s  DD=%(local_dd)s installer=%(local_installer) UDA=%(local_uda)s"
+
+toolchain = {'name': 'foss', 'version': '2019b'}
+
+ 
+dependencies = [
+    ('IMAS_devs',version),
+    # ('Ruby', "2.7.1"),  # for FRUIT
+    # ('FRUIT','3.4.3','-Ruby-2.7.1'),
+
+    ('CHEASE','12.14','-IMAS-%(version)s'),
+    ('GENRAY','10.11.1','-IMAS-%(version)s'),
+    ('RISK','2.1.0','-IMAS-%(version)s'),
+    ('NEMO','2.1.0','-IMAS-%(version)s'),
+    ('SPOT','2.1.0','-IMAS-%(version)s'),
+
+  
+]
+ 
+
+moduleclass = 'phys'

@@ -1,0 +1,50 @@
+diff -ruN hcd2core-sources.orig/fc2k/hcd2core_sources_nodiag.xml hcd2core-sources/fc2k/hcd2core_sources_nodiag.xml
+--- hcd2core-sources.orig/fc2k/hcd2core_sources_nodiag.xml	2020-06-03 23:34:06.299306758 +0000
++++ hcd2core-sources/fc2k/hcd2core_sources_nodiag.xml	2020-06-03 23:34:19.271376691 +0000
+@@ -84,12 +84,12 @@
+   <actorDoc>hcd2core_sources maps the IDSs distributions, waves and distribution_sources into a core_sources IDS.</actorDoc>
+   <actorFolder>org/iter/imas/hcd2core_sources</actorFolder>
+   <semantic>hcd2core_sources</semantic>
+-  <compiler>ifort</compiler>
++  <compiler>gfortran</compiler>
+   <libraries/>
+   <systemLibraries>
+-    <string>imas-ifort</string>
++    <string>imas-gfortran</string>
+     <string>interpos</string>
+-    <string>imas-identifiers-ifort</string>
++    <string>imas-identifiers-gfortran</string>
+     <string>xmllib</string>
+   </systemLibraries>
+   <lang>fortran</lang>
+diff -ruN hcd2core-sources.orig/fc2k/hcd2core_sources.xml hcd2core-sources/fc2k/hcd2core_sources.xml
+--- hcd2core-sources.orig/fc2k/hcd2core_sources.xml	2020-06-03 23:34:06.299306758 +0000
++++ hcd2core-sources/fc2k/hcd2core_sources.xml	2020-06-03 23:34:15.879358420 +0000
+@@ -84,12 +84,12 @@
+   <actorDoc>hcd2core_sources maps the IDSs distributions, waves and distribution_sources into a core_sources IDS.</actorDoc>
+   <actorFolder>org/iter/imas/hcd2core_sources</actorFolder>
+   <semantic>hcd2core_sources</semantic>
+-  <compiler>ifort</compiler>
++  <compiler>gfortran</compiler>
+   <libraries/>
+   <systemLibraries>
+-    <string>imas-ifort</string>
++    <string>imas-gfortran</string>
+     <string>interpos</string>
+-    <string>imas-identifiers-ifort</string>
++    <string>imas-identifiers-gfortran</string>
+     <string>xmllib</string>
+   </systemLibraries>
+   <lang>fortran</lang>
+diff -ruN hcd2core-sources.orig/src/Makefile hcd2core-sources/src/Makefile
+--- hcd2core-sources.orig/src/Makefile	2020-06-03 23:34:06.299306758 +0000
++++ hcd2core-sources/src/Makefile	2020-06-03 23:34:45.875519662 +0000
+@@ -67,7 +67,7 @@
+ 
+ INCLUDE+=$(shell pkg-config --cflags ${PACKAGES} )
+ LIBS+=$(shell    pkg-config --libs   ${PACKAGES} )
+-
++MOD_FLAG+=$(EBROOTINTERPOS)/include 
+ FFLAGS+=$(DIAG_INFO)
+ 
+ all: library test wrapper

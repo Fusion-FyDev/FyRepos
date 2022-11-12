@@ -1,0 +1,67 @@
+# S.D.Pinches, ITER Organization
+# Patch to generate position-independent code by compiling with -fPIC
+diff -Nru 20181008-orig/share/Make.flags 20181008/share/Make.flags
+--- 20181008-orig/share/Make.flags	2018-10-08 11:18:32.000000000 +0200
++++ 20181008/share/Make.flags	2019-03-14 18:01:22.000000000 +0100
+@@ -1006,15 +1006,15 @@
+     endif
+     ifdef _64
+       Bit=64
+-      FFLAGS = -c -O -m64 -ffpe-trap=invalid,zero,overflow -fno-range-check -fdollar-ok -cpp 
+-      DFFLAGS = -c -g -m64 -ffpe-trap=invalid,zero,overflow -fno-range-check -fdollar-ok -cpp 
+-      CFLAGS = -c -O -m64 
+-      CXXFLAGS =  -c -O -m64 
++      FFLAGS = -c -O -m64 -ffpe-trap=invalid,zero,overflow -fno-range-check -fdollar-ok -cpp -fPIC
++      DFFLAGS = -c -g -m64 -ffpe-trap=invalid,zero,overflow -fno-range-check -fdollar-ok -cpp -fPIC 
++      CFLAGS = -c -O -m64 -fPIC
++      CXXFLAGS =  -c -O -m64 -fPIC
+     else
+-      FFLAGS = -c -O -ffpe-trap=invalid,zero,overflow -fno-range-check -fdollar-ok -cpp 
+-      DFFLAGS = -c -g -ffpe-trap=invalid,zero,overflow -fno-range-check -fdollar-ok -cpp 
+-      CFLAGS = -c -O 
+-      CXXFLAGS =  -c -O 
++      FFLAGS = -c -O -ffpe-trap=invalid,zero,overflow -fno-range-check -fdollar-ok -cpp -fPIC
++      DFFLAGS = -c -g -ffpe-trap=invalid,zero,overflow -fno-range-check -fdollar-ok -cpp -fPIC
++      CFLAGS = -c -O -fPIC
++      CXXFLAGS =  -c -O -fPIC
+     endif
+     ifndef FORTLIBS
+       FORTLIBS=-L$(F90HOME)/lib${Bit} -L/lib${Bit} -L/usr/lib${Bit} -lgfortran -lm
+@@ -1112,10 +1112,10 @@
+ 
+ # 06/11/2013 CLF: remove  -heap-arrays 20 : it does not work with newer Intel
+ #    FFLAGS = -c -O -nowarn -ftz -heap-arrays 20 -auto-scalar -traceback -align dcommons
+-    FFLAGS = -c -O -nowarn -ftz -auto-scalar -traceback -align dcommons
+-    DFFLAGS = -c -g -w -check -fpe0 -auto-scalar -traceback -align dcommons
+-    MPI_FFLAGS =  -c -O -nowarn  -ftz -traceback -align dcommons -auto-scalar
+-    MPI_DFFLAGS = -c -g -check -fpe0 -traceback -align dcommons -auto-scalar
++    FFLAGS = -c -O -nowarn -ftz -auto-scalar -traceback -align dcommons -fPIC
++    DFFLAGS = -c -g -w -check -fpe0 -auto-scalar -traceback -align dcommons -fPIC
++    MPI_FFLAGS =  -c -O -nowarn  -ftz -traceback -align dcommons -auto-scalar -fPIC
++    MPI_DFFLAGS = -c -g -check -fpe0 -traceback -align dcommons -auto-scalar -fPIC
+     FIXEDE = -132
+     DYNAMIC=-auto
+     MFLAGS= -I
+@@ -1203,14 +1203,14 @@
+        else
+          CC=gcc
+          CXX=g++
+-         CFLAGS     = -c -O2 -m64 -ansi 
+-         MPI_CFLAGS = -c -O2 -m64 -ansi 
+-         DCFLAGS     = -c -g -m64 -ansi  
+-         MPI_DCFLAGS = -c -g -m64 -ansi 
+-         CXXFLAGS     =  -c -m64 
+-         MPI_CXXFLAGS =  -c -m64 
+-         DCXXFLAGS     =  -c -g -m64 
+-         MPI_DCXXFLAGS =  -c -g -m64 
++         CFLAGS     = -c -O2 -m64 -ansi -fPIC
++         MPI_CFLAGS = -c -O2 -m64 -ansi -fPIC
++         DCFLAGS     = -c -g -m64 -ansi -fPIC
++         MPI_DCFLAGS = -c -g -m64 -ansi -fPIC
++         CXXFLAGS     =  -c -m64 -fPIC
++         MPI_CXXFLAGS =  -c -m64 -fPIC
++         DCXXFLAGS     =  -c -g -m64 -fPIC
++         MPI_DCXXFLAGS =  -c -g -m64 -fPIC
+          F_MAIN = ${FLIBROOT}/for_main.o
+        endif
+     endif

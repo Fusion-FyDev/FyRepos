@@ -1,0 +1,42 @@
+easyblock = 'ConfigureMake'
+
+name = 'PSPLINE'
+version = '20181008'
+
+homepage = 'http://w3.pppl.gov/ntcc/PSPLINE/'
+description = """Princeton Spline and Hermite Cubic Interpolation Routines"""
+
+toolchain = {'name': 'foss', 'version': '2019b'}
+toolchainopts = {'pic': True, 'usempi': True}
+
+source_urls = [
+    'http://w3.pppl.gov/rib/repositories/NTCC/files/'
+]
+sources = [{
+    'filename': SOURCELOWER_TAR_GZ,
+    'download_filename': '%(namelower)s.tar.gz',
+}]
+# patches = ['%(name)s-%(version)s-fPIC.patch']
+# checksums = [
+#     'b7e739000c5d80c79d6b35b49db598e84c9eb47d04b8bce46ad22e5df5e9e159',  # pspline-20181008.tar.gz
+#     'e04dceeff1ca6c28c9882557eb9992be1d0fb68a9a4fa1189bb42e7d980faf65',  # PSPLINE-20181008-fPIC.patch
+# ]
+
+builddependencies = [('libreadline', '8.0')]
+
+dependencies = [('netCDF-Fortran', '4.5.2')]
+
+skipsteps = ['configure']
+
+prebuildopts = 'FORTRAN_VARIANT=GCC NETCDF_DIR=`nf-config --prefix` NETCDF=`nc-config --flibs`'
+
+installopts = 'PREFIX=%(installdir)s'
+
+parallel = 1
+
+sanity_check_paths = {
+    'files': ['lib/libezcdf.a', 'lib/libportlib.a', 'lib/libpspline.a'],
+    'dirs': ['lib', 'mod'],
+}
+
+moduleclass = 'data'

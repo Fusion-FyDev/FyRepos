@@ -1,0 +1,75 @@
+easyblock = 'ConfigureMake'
+
+name = 'AMNS'
+version = '1.3.3'
+versionsuffix = '-Java-%(javaver)s'
+
+homepage = 'https://git.iter.org/projects/IMEX/repos/amns'
+description = """Atomic, Molecular, Nuclear, and Surface Data for IMAS"""
+
+toolchain = {'name': 'foss', 'version': '2020a'}
+
+# source_urls = [
+#     'https://git.iter.org/rest/api/latest/projects/IMEX/repos/%(namelower)s/archive?'
+#     'at=refs%2Ftags%2F%(version)s&format=zip&download/'
+# ]
+# sources = [SOURCELOWER_ZIP]
+# checksums = ['9d305ab7dbbe57047b1111cfe981fa57fab0615f2c8d6c430f74ce16938d318d']
+sources = [
+    {
+    'filename': '%(namelower)s-%(version)s.tar.gz',
+    'git_config': {
+        'url': 'ssh://git@git.iter.org/imex',
+        'repo_name': '%(namelower)s',
+        'tag': '%(version)s',
+    },
+}]
+
+# Run eb with EBROOTIMAS=/work/imas/core/IMAS/3.29.0-4.7.2, in case of
+# get_software_root software root for IMAS was not found in environment
+# CI MAGIC:fake_unload_latest_IMAS.sh
+local_dd = '3.30.0'
+local_al = '4.8.6'
+local_imas= local_dd+"_"+local_al
+ 
+# CI MAGIC:fake_unload_texlive.sh
+osdependencies = [
+    ('latexmk'),
+]
+
+builddependencies = [
+    ('Doxygen', '1.8.17'),
+    ('IMAS', local_imas)
+]
+
+dependencies = [
+    ('Python', '3.8.2'),
+    ('Java', '1.8', '', True),
+]
+
+preconfigopts = 'echo "%s" > .tarball-version && ./bootstrap &&' % (version)
+configopts = '--enable-doc --enable-examples --enable-tests --enable-python \
+              --enable-amns_driver --enable-java --enable-c '
+runtest = 'check'
+
+modextravars = {
+    'AMNS_PREFIX': '%(installdir)s',
+}
+
+modaliases = {
+    'amns_doc': '(module purge ; xdg-open %(installdir)s/share/doc/AMNS/html/index.html)',
+}
+
+modextrapaths = {
+    'PYTHONPATH': 'lib/python%(pyshortver)s/site-packages',
+    'CLASSPATH':   'jar/amns.jar',
+}
+
+sanity_check_paths = {
+    'files': ['lib/libamns.a', 'lib/libamns.la', 'lib/libamns.so',
+              'include/amns_types.mod', 'include/amns_module.mod',
+              'include/amns_interface.h', 'lib/pkgconfig/amns.pc'],
+    'dirs':  ['include', 'lib/pkgconfig', 'lib/python3.6/site-packages/AMNS']
+}
+
+moduleclass = 'data'

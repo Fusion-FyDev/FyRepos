@@ -1,0 +1,30 @@
+easyblock = 'ConfigureMake'
+
+name = 'INTERPOS'
+version = '9.1.0'
+
+homepage = 'http://imas.iter.org/'
+description = "Interpolation routines"
+
+toolchain = {'name': 'GCCcore', 'version': '10.2.0'}
+
+sources = [
+    {'filename': SOURCELOWER_TAR_GZ, 'git_config': {'url': 'ssh://git@git.iter.org/lib', 'repo_name': '%(namelower)s', 'tag': '%(version)s'}},
+]
+
+builddependencies = [
+    ('binutils','2.35'),
+    ('Autotools', '20200321'),
+]
+
+preconfigopts = 'echo "9.1.0" > .tarball-version && ./bootstrap &&'
+configopts = '--enable-tests'
+
+runtest = 'check'
+
+sanity_check_paths = {
+    'files': ['include/interpos_module.mod', 'include/interpos_source.f90', 'include/prec_rkind.mod', 'lib/libinterpos.a', 'lib/libinterpos.so', 'lib/pkgconfig/%(namelower)s.pc'],
+    'dirs': ['include', 'lib/pkgconfig'],
+}
+
+moduleclass = 'lib'

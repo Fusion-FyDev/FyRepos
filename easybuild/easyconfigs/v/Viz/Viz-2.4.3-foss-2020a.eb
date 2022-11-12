@@ -1,0 +1,120 @@
+easyblock = 'MakeCp'
+
+name = 'Viz'
+version = '2.4.3'
+
+local_version_etsviz = '1.0.0'
+
+versionsuffix = '-Python-%(pyver)s'
+
+homepage = 'https://git.iter.org/projects/VIS/repos/viz'
+description = """IMAS Visualization Tool"""
+
+local_dd = '3.30.0'
+local_al = '4.8.6'
+local_imas = local_dd+"_"+local_al
+
+toolchain = {'name': 'foss', 'version': '2020a'}
+
+# sources = [
+#     {
+#         'source_urls': [
+#             'https://git.iter.org/rest/api/latest/projects/VIS/repos/%(namelower)s/archive?'
+#             'at=refs%2Ftags%2F%(version)s&format=zip&download/',
+#         ],
+#         'download_filename': '%(namelower)s-%(version)s.zip',
+#         'filename': '%(namelower)s-%(version)s.zip',
+#         'extract_cmd': "unzip -qq %s",
+#     },
+#     {
+#         'source_urls': [
+#             'https://git.iter.org/rest/api/latest/projects/VIS/repos/ets-%(namelower)s/archive?'
+#             'at=refs%2Ftags%2F1.0.0&format=zip&download/',
+#         ],
+#         'download_filename': 'ets-%(namelower)s-1.0.0.zip',
+#         'filename': 'ets-%(namelower)s-1.0.0.zip',
+#         'extract_cmd': "unzip -qq %s -d imasviz/VizPlugins/viz_ETS/ets-viz",
+#     }
+# ]
+# checksums = [
+#     'cdf759f6c36959ec1975c1e98773def43b0295a342da62ff2dbe3dd3bb606f1d',  # viz-2.4.2.zip
+#     '0990a29c8481f5d576c08d8621922e5d976d92c92c9d67fc4db0f571d246e1d1',  # ets-viz-1.0.0.zip
+# ]
+sources = [
+
+    {
+        'filename': '%(namelower)s-%(version)s.tar.gz',
+        'git_config': {
+            'url': 'ssh://git@git.iter.org/vis',
+            'repo_name': 'viz',
+            'tag': '%(version)s',
+        },
+    }]
+
+# Run eb with EBROOTIMAS=/work/imas/core/IMAS/3.28.1-4.7.2, in case of
+# get_software_root software root for IMAS was not found in environment
+# CI MAGIC:fake_unload_latest_IMAS.sh
+
+# CI MAGIC:fake_unload_texlive.sh
+osdependencies = [
+    ('latexmk'), ('python3-sphinx')
+]
+
+builddependencies = [
+    ('IMAS', local_imas),
+    ('PyPkgs', '2020a', versionsuffix),
+]
+
+dependencies = [
+    ('IMAS', local_imas),
+    ('PyPkgs', '2020a', versionsuffix),
+
+    ('Python', '3.8.2'),
+    ('PyQt5', '5.15.2', versionsuffix),
+    ('SciPy-bundle', '2020.03', versionsuffix),
+    ('matplotlib', '3.2.1', versionsuffix),
+]
+
+
+# use_pip = True
+
+# exts_defaultclass = "PythonPackage"
+
+# exts_default_options = {
+#     "source_urls": [PYPI_SOURCE],
+#     #    "installopts": "  -i https://pypi.tuna.tsinghua.edu.cn/simple ",
+#     "pip_ignore_installed": True,
+#     "use_pip_for_deps": True,
+#     "sanity_pip_check": False,
+#     "unpack_sources": False,
+# }
+# # order is important!
+# exts_list = [
+#     ("pyqtgraph", "0.11.1"),
+#     ("Sphinx", "3.4.3")
+
+# ]
+
+# prebuildopts = 'mkdir -p imasviz/VizPlugins/viz_ETS/ets-viz && cp *.py imasviz/VizPlugins/viz_ETS/ets-viz && '
+
+buildopts = 'IMAS_VIZ_VERSION=%(version)s VIZ_HOME=%(installdir)s'
+
+files_to_copy = ['config', 'doc', 'imasviz',
+                 'Makefile', 'README', 'resources', 'ts_mapping_files']
+
+modextravars = {
+    'VIZ_PRODUCTION': '1',
+    'VIZ_HOME': '%(installdir)s',
+    'IMAS_VIZ_VERSION': '%(version)s',
+}
+
+modaliases = {
+    'viz': 'python3 %(installdir)s/imasviz/VizGUI/QtVIZ_GUI.py',
+}
+
+sanity_check_paths = {
+    'files': ['README', 'imasviz/VizGUI/QtVIZ_GUI.py'],
+    'dirs':  ['doc',  'imasviz', 'resources', 'ts_mapping_files']
+}
+
+moduleclass = 'data'

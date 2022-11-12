@@ -1,0 +1,18 @@
+diff -ruN fc2k.orig/scripts/TemplateRWToolsFortran.py fc2k/scripts/TemplateRWToolsFortran.py
+--- fc2k.orig/scripts/TemplateRWToolsFortran.py	2021-01-19 12:57:55.880000000 +0800
++++ fc2k/scripts/TemplateRWToolsFortran.py	2021-01-19 13:01:11.960000000 +0800
+@@ -36,10 +36,10 @@
+     implicit none
+     type(idsstruct), intent(inout) :: Mids
+     read(10,'(A)') Mids%ids
+-    read(10,'(I)') Mids%shot
+-    read(10,'(I)') Mids%run
+-    read(10,'(I)') Mids%occurrence
+-    read(10,'(I)') Mids%idx
++    read(10,'(I8)') Mids%shot
++    read(10,'(I8)') Mids%run
++    read(10,'(I8)') Mids%occurrence
++    read(10,'(I8)') Mids%idx
+     read(10,'(A)') Mids%machine
+     read(10,'(A)') Mids%user
+     read(10,'(A)') Mids%version

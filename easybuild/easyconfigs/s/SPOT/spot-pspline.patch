@@ -1,0 +1,49 @@
+diff -ruN spot.orig/arch_loc_imas_gateway.inc spot/arch_loc_imas_gateway.inc
+--- spot.orig/arch_loc_imas_gateway.inc	2020-06-03 02:39:22.000000000 +0000
++++ spot/arch_loc_imas_gateway.inc	2020-06-03 12:50:27.141067755 +0000
+@@ -9,7 +9,6 @@
+   # -check all -warn all
+   INCLUDE=-I. 
+   LIBS=`pkg-config imas-ifort --libs` \
+-  -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lpthread -lm
+   OBJMOD=-module
+   MPIF90=mpiifort
+ 
+@@ -22,10 +21,9 @@
+   -Wuninitialized -pedantic -freal-4-real-8 -fcheck=bounds,do,mem,pointer,recursion \
+   -DGFORTRAN
+   # -Wall -Werror
+-  INCLUDE=-I. 
+-  LIBS=`pkg-config imas-gfortran --libs` \
+-  -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lpthread -lm
+-  OBJMOD=-J
++  INCLUDE=-I. `pkg-config imas-gfortran --cflags` 
++  LIBS=`pkg-config imas-gfortran --libs` 
++  OBJMOD=-J$(EBROOTINTERPOS)/include
+   MPIF90=mpifort
+ endif
+ 
+@@ -159,8 +157,8 @@
+   LIBS   += `pkg-config pspline-ifort --libs  ` ##-L$(PSPLINEDIR)/lib -lpspline -lcdf_dummy -lezcdf -lportlib
+ endif
+ ifeq ($(F90),gfortran)
+-  INCLUDE+= `pkg-config pspline-gfortran --cflags` ##-I$(PSPLINEDIR)/mod
+-  LIBS   += `pkg-config pspline-gfortran --libs  ` ##-L$(PSPLINEDIR)/lib -lpspline -lcdf_dummy -lezcdf -lportlib
++  INCLUDE+= `pkg-config ompi-fort  --cflags` -I$(PSPLINEDIR)/include 
++  LIBS   += `pkg-config ompi-fort  --libs  ` -L$(PSPLINEDIR)/lib -lpspline -lcdf_dummy -lezcdf -lportlib
+ endif
+ 
+ # ---------------------
+diff -ruN spot.orig/fc2k/spot_ids_bamboo_gfortran.xml spot/fc2k/spot_ids_bamboo_gfortran.xml
+--- spot.orig/fc2k/spot_ids_bamboo_gfortran.xml	2020-06-03 02:39:22.000000000 +0000
++++ spot/fc2k/spot_ids_bamboo_gfortran.xml	2020-06-03 12:53:43.825768616 +0000
+@@ -114,9 +114,6 @@
+   <compiler>gfortran</compiler>
+   <libraries>
+     <string>__EBROOTFRUIT__/lib/libfruit.a</string>
+-    <string>__MKLROOT__/lib/intel64/libmkl_intel_lp64.a</string>
+-    <string>__MKLROOT__/lib/intel64/libmkl_sequential.a</string>
+-    <string>__MKLROOT__/lib/intel64/libmkl_core.a</string>
+     <string>grid_library/gfortran/lib/libimas_ggd.a</string>
+     <string>__EBROOTPSPLINE__/lib/libpspline.a</string>
+   </libraries>

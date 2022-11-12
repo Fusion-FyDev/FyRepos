@@ -1,0 +1,77 @@
+easyblock = 'ConfigureMake'
+
+name = 'cql3d'
+version = '9bcdb60'
+homepage = 'http://compxco.com/cql3d.html'
+description = """The relativistic Collisional/QuasiLinear 3D toroidal geometry code CQL3D solves a Bounce-Averaged \
+                 Fokker-Planck equation to obtain the 3 1/2-D distributions of electrons and multispecies ions, \
+                 resulting from the balance between collisions, RF/neutral beam/particle sources, \
+                 applied toroidal electric field, and radial diffusion. (3 1/2-D refers to 2 velocity, \
+                 1 generalized radius, and implicit treatment of the poloidal variation through the \
+                 bounce-averaging.) Steady-state and time-dependent solutions are supported. \
+                  Ampere-Faraday equations for the toroidal electric field can optionally be \
+                  simultaneously solved. See Fig. 1 for a summary of many of the features of \
+                  the CQL3D Fokker-Planck System and its couplings with other codes. ."""
+
+toolchain = {'name': 'gompi', 'version': '2020a'}
+sources = [{
+    'filename': 'cql3d-%(version)s.tar.gz',
+    'git_config': {
+        'url': 'https://github.com/compxco',
+        'repo_name': 'cql3d',
+        'commit': '%(version)s',
+    },
+}]
+
+patches = ["%(name)s_easybuild.patch"]
+
+
+builddependencies = [
+    ('OpenMPI', '4.0.3'),
+     ('Python', '2.7.18'),
+]
+
+dependencies = [
+    ('PGPLOT', '5.2'),
+    ('netCDF', '4.7.4'),
+    ('netCDF-Fortran', '4.5.2'),
+]
+
+skipsteps = ['configure']
+
+
+# local_premake = """EOF
+# cp %(builddir)s/cql3d/makefile_mpi.gfortran64  %(builddir)s/cql3d/Makefile
+# sed -i 's/^INCLUDE=/#INCLUDE=/g' Makefile
+# sed -i 's/^LOCATION/#LOCATION/g' Makefile
+# sed -i 's/^LIBRARIES/#LIBRARIES/g' Makefile
+# sed -i 's/^COMPILER/#COMPILER/g' Makefile
+# EOF
+# """
+# prebuildopts = "cat > %(builddir)s/cql3d/premake <<" + \
+#     local_premake
+
+# prebuildopts += 'cd %(builddir)s/cql3d/ %% chmod +x premake && '
+# prebuildopts += 'sh premake &&'
+# prebuildopts += 'chmod 764 mpi/doparallel.py &&'
+# local_envs = """
+#     export COMPILER="mpif90"
+#     export INCLUDE="-I/usr/include -I${EBROOTNETCDF}/include -I${EBROOTNETCDFMINFORTRAN}/include -I${EBROOTOPENMPI}/include"
+#     export LOCATION="-L/usr/lib64 -L${EBROOTPGPLOT} -L${EBROOTNETCDF}/lib -I${EBROOTNETCDFMINFORTRAN}/lib -I${EBROOTOPENMPI}/lib"
+# #    export  LIBRARIES="${LOCATION}  -lX11 -lnetcdf -lnetcdff -lpgplot"
+#     """
+parallel = 1
+buildopts =" -f makefile_gfortran64_noplots; make -f makefile_mpi.gfortran64"
+install_cmd = "mkdir -p  %(installdir)s/bin/; "
+install_cmd += "cp -r  %(builddir)s/cql3d/xcql3d*.gfortran64  %(installdir)s/bin/ ;"
+install_cmd += "cp -r  %(builddir)s/cql3d/00_Cql3d_Regression_Tests  %(installdir)s/tests  ;"
+install_cmd += "cp -r  %(builddir)s/cql3d/adas_dir  %(installdir)s/ ;"
+install_cmd += "cp -r  %(builddir)s/cql3d/ADPAK_data  %(installdir)s/ ;"
+
+sanity_check_paths = {
+    'files': ['bin/xcql3d.gfortran64','bin/xcql3d_mpi.gfortran64'],
+    'dirs': ['bin','tests']
+}
+# make sure that pdf terminal type is available
+#sanity_check_commands = ["ncdump  -v curr cql3d_12.nc  |tail -n 10"]
+moduleclass = 'phys'

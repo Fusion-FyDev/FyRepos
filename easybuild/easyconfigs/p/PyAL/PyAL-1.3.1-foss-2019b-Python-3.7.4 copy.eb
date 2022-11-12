@@ -1,0 +1,37 @@
+easyblock = 'MakeCp'
+
+name = 'PyAL'
+version = '1.3.1'
+versionsuffix = '-Python-%(pyver)s'
+
+homepage = 'https://git.iter.org/projects/IMAS/repos/pyal'
+description = """A Pythonic UAL wrapper"""
+
+toolchain = {'name': 'foss', 'version': '2019b'}
+
+sources = [
+    
+    {
+    'filename': '%(namelower)s-%(version)s.tar.gz',
+    'git_config': {
+        'url': 'ssh://git@git.iter.org/imas',
+        'repo_name': '%(namelower)s',
+        'tag': '%(version)s',
+    },
+}]
+dependencies = [
+    ('Python', '3.7.4'),
+]
+
+skipsteps = ['build']
+
+files_to_copy = ['README.txt', '*.py', '*.m', '*.java', 'idsdiff', 'cloneshot']
+
+modextrapaths = {'PYTHONPATH': ['']}
+
+sanity_check_paths = {
+    'files': ['actors.py'],
+    'dirs':  []
+}
+
+moduleclass = 'devel'

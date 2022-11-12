@@ -1,0 +1,67 @@
+easyblock = 'ConfigureMake'
+
+name = 'CHEASE'
+version = '2022.09.11'
+
+homepage = 'https://crppwww.epfl.ch/~sauter/CHEASE/'
+description = """The CHEASE code is an open access fixed-boundary equilibrium code described in the following publications:
+
+H. Lutjens, A. Bondeson and O. Sauter, The CHEASE code for toroidal MHD equilibria, Comput. Phys. Commun. 97 (1996) 219
+H. Lutjens, A. Bondeson and A. Roy, Axisymmetric MHD equilibrium solver with bicubic Hermite elements, Comput. Phys. Commun. 69 (1992) 287
+
+"""
+
+local_dd = '3.37.0'
+local_al = '4.11.0'
+local_imas= local_dd+"_"+local_al
+local_iwrap = '0.5.0'
+
+versionsuffix = '-IMAS-'+ local_imas
+
+toolchain = {'name': 'foss', 'version': '2020b'}
+toolchainopts = {'pic': True}
+
+sources = [
+    
+    {
+    'filename': '%(namelower)s-%(version)s.tar.gz',
+    'git_config': {
+        'url': 'https://gitlab.epfl.ch/spc/chease.git',
+        'repo_name': '%(namelower)s',
+        'tag': '%(version)s',
+    },
+}]
+patches=["CHEASE-2022-09-11-new.patch"]
+
+builddependencies = [
+    ('Java',  '13',None,True),  
+    ('FC2K', '4.14.0', '%(versionsuffix)s'),
+    #  ('FC2K','4.14.0','',('foss','2020b'+'-IMAS-'+%(local_imas)s)),
+    ('XMLlib', '3.3.1'),
+    ('libxml2','2.9.10'),
+    ('iWrap',local_iwrap,'-Python-3.8.6')
+
+    # ('PyHDC'   ,      '0.17.3','-Python-%(pyver)s'),
+]
+dependencies = [
+    ('IMAS',local_imas),
+    ('HDF5', '1.10.7'),
+    ('INTERPOS', '9.1.0'),
+    ('iWrap',local_iwrap,'-Python-3.8.6')
+
+]
+
+skipsteps = ['configure', 'install']
+
+parallel = 1
+build_cmd = 'cd src-f90 && CHEASE_MACHINE=ITER CHEASE_F90=gfortran  XML_USE_CHOICE=libxml2 make'
+buildopts  = 'libchease_module_imas && cd .. && iwrap -f iwrap/chease.yaml -i  %(installdir)s'
+
+modextrapaths = {'PYTHONPATH':''}
+
+sanity_check_paths = {
+    'files': ['chease/actor.py'],
+    'dirs':  ['chease/bin','chease/wrapper']
+}
+
+moduleclass = 'phys'

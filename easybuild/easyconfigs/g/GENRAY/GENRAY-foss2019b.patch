@@ -1,0 +1,111 @@
+diff -ruN genray.orig/dxdr.f genray/dxdr.f
+--- genray.orig/dxdr.f	2020-06-02 01:32:22.391660574 +0000
++++ genray/dxdr.f	2020-06-02 01:32:41.459729455 +0000
+@@ -1,4 +1,4 @@
+-c/*
++c
+ c        ********************** dxdr ************************
+ c        *                      ----                        *
+ c        * this function calculates  the  derivative  of  x *
+diff -ruN genray.orig/dxdz.f genray/dxdz.f
+--- genray.orig/dxdz.f	2020-06-02 01:32:22.391660574 +0000
++++ genray/dxdz.f	2020-06-02 01:32:41.459729455 +0000
+@@ -1,4 +1,4 @@
+-c/*
++c
+ c        ********************** dxdz ************************
+ c        *                      ----                        *
+ c        * this function calculates  the  derivative  of  x *
+diff -ruN genray.orig/fc2k_genray.xml genray/fc2k_genray.xml
+--- genray.orig/fc2k_genray.xml	2020-06-02 01:32:22.391660574 +0000
++++ genray/fc2k_genray.xml	2020-06-02 01:33:12.231840637 +0000
+@@ -75,9 +75,9 @@
+   <actorDoc></actorDoc>
+   <actorFolder>org/iter/imas/genray</actorFolder>
+   <semantic>genray</semantic>
+-  <compiler>ifort</compiler>
++  <compiler>gfortran</compiler>
+   <libraries>
+-    <string>/work/imas/opt/EasyBuild/software/GCCcore/6.4.0/lib64/libquadmath.a</string>
++    <!-- <string>/work/imas/opt/EasyBuild/software/GCCcore/6.4.0/lib64/libquadmath.a</string> -->
+   </libraries>
+   <systemLibraries>
+     <string>xmllib</string>
+diff -ruN genray.orig/Makefile genray/Makefile
+--- genray.orig/Makefile	2020-06-02 01:32:22.383660545 +0000
++++ genray/Makefile	2020-06-02 01:32:41.459729455 +0000
+@@ -15,7 +15,7 @@
+ 
+ SHELL=		/bin/sh
+ NAME=		xgenray
+-COMPILER=	ifort
++COMPILER?=	ifort
+ BUILDER=	$(COMPILER)
+ INCLUDES=	antenna.i adj.i bripplb.i cefield.i cone.i dskin.i eps.i\
+ 		emissa.i five.i fourb.i gr.i grill.i ions.i\
+@@ -74,18 +74,18 @@
+ endif
+ 
+ F90OBJS=	$(F90SRCS:.f90=.o)
+-LOCATION=	-L/usr/lib64  -L/home/bobh/pgplot/pgplot_build_140331
++LOCATION=	-L/usr/lib64  # -L/home/bobh/pgplot/pgplot_build_140331
+ #LOCATION  =  -L/usr/local/netcdf-3.5.0/lib -L/usr/X11R6/lib -L/usr/local/pgplot  -L/usr/X11R6/lib -L/usr/lib/gcc-lib/i386-redhat-linux/2.96
+ #LIBRARIES=	-lX11 -lnetcdf -lpgplot
+ 
+ LIBRARIES=	-L$(NCDIR)/lib -lX11 -lnetcdff -lnetcdf -lpgplot -lgfortran
+ #LIBRARIES=	-lX11 -lnetcdf -lpgplot -lnetcdf  -lm -llapack -lblas -lg2c
+-INCLUDE= $(NCDIR)/include
++INCLUDE= -I $(NCDIR)/include
+ 
+ # IMAS NEEDS EXTRA LIBRARIES AND INCLUDE FILES
+ ifeq ($(IMAS),-DIMAS)
+-  LIBRARIES=`pkg-config imas-ifort netcdf-fortran x11 xmllib interpos --libs`
+-  INCLUDE=`pkg-config imas-ifort netcdf-fortran x11 xmllib interpos --cflags`
++  LIBRARIES=`pkg-config imas-$(COMPILER) netcdf-fortran x11 xmllib interpos --libs  `
++  INCLUDE=`pkg-config imas-$(COMPILER) netcdf-fortran x11 xmllib interpos --cflags `
+ endif
+ 
+ DEBUG=		
+@@ -96,7 +96,7 @@
+ BSPECIAL=	
+ 
+ #COMPILE=	$(COMPILER) -c $(CSPECIAL) $(DEBUG) -I $(INCLUDE)
+-COMPILE=	$(COMPILER) -c $(CSPECIAL) -I $(INCLUDE)
++COMPILE=	$(COMPILER) -c $(CSPECIAL) $(INCLUDE)
+ #BUILD=		$(BUILDER) -o $(NAME) $(BSPECIAL) $(DEBUG)
+ BUILD=		$(BUILDER) -o $(NAME) $(BSPECIAL)
+ PROTECT=	chmod 755
+diff -ruN genray.orig/read_write_genray_input.f genray/read_write_genray_input.f
+--- genray.orig/read_write_genray_input.f	2020-06-02 01:32:22.419660675 +0000
++++ genray/read_write_genray_input.f	2020-06-02 01:32:41.463729470 +0000
+@@ -474,8 +474,17 @@
+          write(*,*) '=> Program stopped.'
+          stop
+       endif
+-      frqncy = maxval(ec_launchers%launcher(:)%frequency%data(1))
++c     patch begin: add by yuzhi@ipp.ac.cn 20200602
++c     to fix gfortran error : Component to the right of a part reference with nonzero rank must not have the POINTER attribute at (1)
++c     - frqncy = maxval(ec_launchers%launcher(:)%frequency%data(1))
+ 
++      frqncy=0
++      do i=1,size(ec_launchers%launcher)
++            if(frqncy < ec_launchers%launcher(i)%frequency%data(1)) then
++                  frqncy=ec_launchers%launcher(i)%frequency%data(1)
++            endif
++      end do
++c     patch end
+ c IF IOXM=-10,  THEN THE POLARIZATION IS READ FROM THE INPUT EC_LAUNCHERS IDS
+ c IF IOXM=1,-1, THEN THE XML FILE FORCES THE POLARIZATION INDEPENDENTLY FROM THE EC_LAUNCHERS IDS      
+ c POLARIZATION: 1=O-MODE, -1=X-MODE
+diff -ruN genray.orig/spldens.f genray/spldens.f
+--- genray.orig/spldens.f	2020-06-02 01:32:22.419660675 +0000
++++ genray/spldens.f	2020-06-02 01:32:41.463729470 +0000
+@@ -1116,7 +1116,7 @@
+          call terp1(ndens,rhom,vflow,d2_vflow_drho,rho_small,1,tabl,!  m/sec
+      &              itabl)
+          dvflwrho=tabl(2)
+-c--------------------------------------------------------------------------\       
++c--------------------------------------------------------------------------       
+       endif
+ 
+       dvflwrho=1.d2*dvflwrho !d(sm/sec)/drho

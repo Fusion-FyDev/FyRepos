@@ -1,0 +1,114 @@
+easyblock = 'ConfigureMake'
+
+name = 'IMAS'
+
+# local_uda = '2.3.1'
+local_dd = '3.30.0'
+local_al = '4.8.6'
+local_installer = '1.9.3'
+version = local_dd+"_"+local_al
+# versionsuffix = '-Python-%(pyver)s'
+
+homepage = 'https://confluence.iter.org/display/IMP'
+
+description = "Integrated Modelling & Analysis Suite (IMAS) AL=%(local_al)s  DD=%(local_dd)s installer=%(local_installer) UDA=%(local_uda)s"
+
+toolchain = {'name': 'foss', 'version': '2020a'}
+toolchainopts = {'pic': True}
+
+sources = [
+
+    {
+        'filename': 'installer-'+local_installer+'.tar.gz',
+        'git_config': {
+            'url': 'ssh://git@git.iter.org/imas',
+            'repo_name': 'installer',
+            'tag': local_installer,
+        }
+    },
+    {
+        'filename': 'data-dictionary-repo.tar.gz',
+    },
+    {
+        'filename': 'access-layer-repo.tar.gz',
+    }
+]
+
+patches = ['imas_foss_2020a.patch']
+
+dependencies = [
+    ('Java',  '1.8',None,True),
+    ('Python', '3.8.2'),
+    ('Boost', '1.72.0'),
+    ('Blitz++', '1.0.2'),
+    ('HDF5', '1.10.6'),
+    ('netCDF', '4.7.4'),
+    ('MDSplus', '7.96.12'),
+    # ('UDA', local_uda),
+
+    ('MDSplus-Python','7.96.12','-Python-%(pyver)s'),
+    ('SciPy-bundle','2020.03','-Python-%(pyver)s')
+]
+builddependencies = [
+    # ('ant', '1.10.6', '-Java-%(javaver)s',   True),
+    ('Saxon-HE', '9.9.1.5', '-Java-%(javaver)s',   True),
+    ('MDSplus-Java','7.96.12','-Java-%(javaver)s'),
+    ('libxslt', '1.1.34'),
+    ('bzip2', '1.0.8'),
+    ('Doxygen', '1.8.17')
+]
+
+osdependencies = [('texlive-font-utils')]
+
+
+skipsteps  = ['configure']
+
+ 
+local_envs = "export TAG_AL="+local_al+" TAG_DD="+local_dd + """        
+    export GIT_OFFLINE=yes
+    export SITECONFIG=site-config/Makefile.default
+    export IMAS_HOME=%(installdir)s  
+    export INSTALL_DIR=%(installdir)s 
+    export CACHE_DD=%(builddir)s/data-dictionary
+    export CACHE_AL=%(builddir)s/access-layer 
+    
+"""
+parallel = 1
+
+build_cmd = local_envs+" make "
+
+buildopts = " all "
+
+install_cmd = local_envs+" make "
+
+installopts = " install "
+
+sanity_check_paths = {
+    'files': ['include/IDSDef.xml',
+              'include/IDSNames.txt'],
+    'dirs': ['share/doc/imas'],
+}
+
+# whatis = "Integrated Modelling and Analysis Suite (IMAS). (imas:%(version)s ual:"+local_al+")"
+
+modextravars = {
+    'IMAS_HOME': '%(installdir)s/../',
+    'IMAS_ROOT': '%(installdir)s',
+    'IMAS_DIR': '%(installdir)s',
+    'IMAS_PREFIX': '%(installdir)s',
+    'IMAS_VERSION': '%(version)s',
+    'UAL_VERSION':  '%(local_al)s',
+}
+modextrapaths = {
+    'PYTHONPATH': 'python/lib',
+    'CLASSPATH': 'jar/imas.jar',
+    'PATH': "extra/bin",
+    'MATLABPATH': "matlab:%(installdir)s/include:%(installdir)s/extra/matlab",
+    'ids_path': "models/mdsplus"
+}
+modluafooter = """
+set_alias('dd_doc', \"( module purge ; xdg-open %(installdir)s/share/doc/imas/html_documentation.html)\")
+"""
+# set_alias('imasdb', \"eval `%(installdir)s/bin/imasdb $*`\")
+
+moduleclass = 'phys'

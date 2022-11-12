@@ -1,0 +1,60 @@
+easyblock = 'ConfigureMake'
+
+name = 'CHEASE'
+version = '12.14'
+
+homepage = 'https://crppwww.epfl.ch/~sauter/CHEASE/'
+description = """The CHEASE code is an open access fixed-boundary equilibrium code described in the following publications:
+
+H. Lutjens, A. Bondeson and O. Sauter, The CHEASE code for toroidal MHD equilibria, Comput. Phys. Commun. 97 (1996) 219
+H. Lutjens, A. Bondeson and A. Roy, Axisymmetric MHD equilibrium solver with bicubic Hermite elements, Comput. Phys. Commun. 69 (1992) 287
+
+"""
+
+local_dd = '3.28.1'
+local_al = '4.7.2'
+local_imas= local_dd+"_"+local_al
+
+versionsuffix = '-IMAS-'+ local_imas
+
+toolchain = {'name': 'foss', 'version': '2019b'}
+toolchainopts = {'pic': True}
+
+sources = [
+    
+    {
+    'filename': '%(namelower)s-%(version)s.tar.gz',
+    'git_config': {
+        'url': 'ssh://git@git.iter.org/eq',
+        'repo_name': '%(namelower)s',
+        'tag': '%(version)s',
+    },
+}]
+patches=["CHEASE-12.14.patch"]
+
+builddependencies = [
+    ('FC2K', '4.10.1', '%(versionsuffix)s'),
+    ('XMLlib', '3.3.0'),
+    ('libxml2','2.9.9')
+]
+dependencies = [
+    ('IMAS',local_imas),
+    ('HDF5', '1.10.5'),
+    ('INTERPOS', '9.0.2'),
+
+]
+
+skipsteps = ['configure', 'install']
+
+parallel = 1
+build_cmd = 'cd src-f90 && CHEASE_MACHINE=ITER CHEASE_F90=gfortran  XML_USE_CHOICE=libxml2 make'
+buildopts  = 'libchease_kepler_imas && cd .. && fc2k fc2k_imas/chease.xml -nokepler -pyworkspace %(installdir)s'
+
+modextrapaths = {'PYTHONPATH':'chease'}
+
+sanity_check_paths = {
+    'files': ['chease/setup.py', 'chease/setup.cfg', 'chease/README.md', 'chease/chease/wrapper.py'],
+    'dirs':  ['chease/chease/native_wrapper/bin']
+}
+
+moduleclass = 'phys'

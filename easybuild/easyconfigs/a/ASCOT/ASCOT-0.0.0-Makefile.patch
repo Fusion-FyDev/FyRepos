@@ -1,0 +1,22 @@
+# Patch Makefile to set EBVERSION correctly
+# S.D. Pinches
+Binary files ascot.orig/ascot-0.0.0.zip and ascot/ascot-0.0.0.zip differ
+diff -Nru ascot.orig/Makefile ascot/Makefile
+--- ascot.orig/Makefile	2020-05-01 16:45:57.000000000 +0200
++++ ascot/Makefile	2020-05-17 21:13:07.748624432 +0200
+@@ -374,10 +374,11 @@
+ 
+ # Note from Seppo: outermost ' added to the ends of the following line to
+ # make it work on gateway. Remove them if it doesn't work on your platform.
+-SVNDEF     = -DSVN_REV='"$(shell svnversion -n 2>/dev/null)"'
+-ifneq ($(wildcard .git),)
+-  SVNDEF = -DSVN_REV='"$(shell git svn find-rev $(git log --max-count 1 --pretty=format:%H))"'
+-endif
++#SVNDEF     = -DSVN_REV='"$(shell svnversion -n 2>/dev/null)"'
++#ifneq ($(wildcard .git),)
++#  SVNDEF = -DSVN_REV='"$(shell git svn find-rev $(git log --max-count 1 --pretty=format:%H))"'
++#endif
++SVNDEF = "-DSVN_REV='EBVERSION'"
+ 
+ PREPROCFLAGS += $(SVNDEF) \
+ 	-DPROCESS0_READS_THEN_MPI_BROADCAST=$(PROCESS0_READS_THEN_MPI_BROADCAST) \

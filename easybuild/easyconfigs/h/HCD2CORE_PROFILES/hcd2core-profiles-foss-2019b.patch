@@ -1,0 +1,29 @@
+diff -ruN hcd2core-profiles.orig/fc2k/hcd2core_profiles.xml hcd2core-profiles/fc2k/hcd2core_profiles.xml
+--- hcd2core-profiles.orig/fc2k/hcd2core_profiles.xml	2020-06-03 23:20:15.702262550 +0000
++++ hcd2core-profiles/fc2k/hcd2core_profiles.xml	2020-06-03 23:20:37.006415448 +0000
+@@ -66,11 +66,11 @@
+   <actorDoc>hcd2core-profiles&amp;#xA;by Thomas Jonsson&amp;#xA;&amp;#xA;UNDER DEVELOPMENT</actorDoc>
+   <actorFolder>org/iter/imas/hcd2core_profiles</actorFolder>
+   <semantic>Heating</semantic>
+-  <compiler>ifort</compiler>
++  <compiler>gfortran</compiler>
+   <libraries/>
+   <systemLibraries>
+     <string>imas-lowlevel</string>
+-    <string>imas-ifort</string>
++    <string>imas-gfortran</string>
+   </systemLibraries>
+   <lang>fortran</lang>
+   <HasCodeParam>true</HasCodeParam>
+diff -ruN hcd2core-profiles.orig/input/h2cp.xsd hcd2core-profiles/input/h2cp.xsd
+--- hcd2core-profiles.orig/input/h2cp.xsd	2020-06-03 23:20:15.702262550 +0000
++++ hcd2core-profiles/input/h2cp.xsd	2020-06-03 23:20:44.758470600 +0000
+@@ -7,7 +7,7 @@
+     <xs:complexType>
+       <xs:all>
+ 
+-  <xs:element name="verbosity" type="nonNegativeInteger">
++  <xs:element name="verbosity" type="xs:nonNegativeInteger">
+     <xs:annotation>
+       <xs:documentation>Regulates the amount of standard output.
+         0 - quite

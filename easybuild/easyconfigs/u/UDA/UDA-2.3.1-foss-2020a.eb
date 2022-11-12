@@ -1,0 +1,105 @@
+easyblock = 'CMakeMake'
+
+name = 'UDA'
+version = '2.3.0'
+# versionsuffix='-Python-%(pyver)s'
+
+homepage = 'https://git.iter.org/projects/IMAS/repos/uda/browse'
+
+description = """The UDA API provides plugin driven data abstraction.
+The UDA can be either run as a client-server API, running as thin client
+ with all functionality being handled on a remote server, or as fat-client 
+ API where both the client access and plugin functionality is run on the
+ local machine.
+"""
+
+toolchain = { 'name': 'foss','version': '2020a',}
+toolchainopts = {'pic': False}
+
+sources = [
+    
+    {
+    'filename': '%(namelower)s-%(version)s.tar.gz',
+    'git_config': {
+        'url': 'ssh://git@git.iter.org/imas',
+        'repo_name': '%(namelower)s',
+        'tag': '%(version)s',
+    },
+}]
+
+patches=["uda-2.3.0-rpc.patch"]
+dependencies = [   
+    ('libtirpc','1.2.6'),  # new version glibc (>2.*) removed "rpc/*.h",  using libtirpc replace it
+    ('Python', '3.8.2'),
+    ('libxml2', '2.9.9'),
+    ('libMemcached', '1.0.18'),
+    ('Boost', '1.72.0'), 
+    ('SciPy-bundle','2020.03', '-Python-%(pyver)s'),
+    # ('PostgreSQL', '12.2'),
+    # ('HDF5', '1.10.5'),
+    # ('netCDF', '4.7.1'),
+    # ('MDSplus', '7.96.12'),
+    
+]
+
+builddependencies = [    
+    ('SWIG', '4.0.1'),
+    ('CMake', '3.15.3') 
+]
+
+osdependencies = [('openssl-devel', 'libssl-dev', 'libopenssl-devel')]
+
+configopts ="-DCMAKE_BUILD_TYPE=Release  \
+            -DGIT_VERSION=%(version)s \
+            -DTARGET_TYPE=OTHER \
+            -DNO_MODULES=ON \
+            -DBUILD_SHARED_LIBS=ON \
+            -DBOOST_ROOT=${EBROOTBOOST} \
+            -DCMAKE_C_FLAGS=' -I${EBROOTLIBTIRPC}/include/tirpc/ -ltirpc ' \
+            -DCMAKE_CXX_FLAGS=' -I${EBROOTLIBTIRPC}/include/tirpc/ -ltirpc ' \
+            "
+
+            # -DBUILD_PLUGINS=hdf5 \
+            # -DPostgreSQL_ROOT=${EBROOTPOSTGRESQL} \
+            # -DNETCDF_DIR=${EBROOTNETCDF} \
+
+install_cmd=" make install && cd %(installdir)s/python_installer && python ./setup.py install  --prefix=%(installdir)s"
+
+installopts=" "
+
+separate_build_dir = True
+
+ 
+sanity_check_paths = {
+    'files': ['lib/libuda_server.a',
+              'lib/libuda_server.so',
+              'lib/libuda_client.a',
+              'lib/libuda_client.so',
+              'lib/libfatuda_client.a',
+              'lib/libfatuda_client.so'
+              ],
+    'dirs': ['include/uda/client',
+             'include/uda/clientserver',
+             'include/uda/plugins',
+             'include/uda/server',
+             'include/uda/structures',
+             'lib/plugins',
+             'lib/pkgconfig'],
+}
+modextravars = {
+    'UDA_DIR'       : '%(installdir)s',
+    'UDA_HOME'      : '%(installdir)s',
+    'UDA_ROOT'      : '%(installdir)s',
+    'UDA_VERSION'   : '%(version)s'
+}
+
+modextrapaths = {
+    'PYTHONPATH'        : 'lib/python%(pyshortver)s/site-packages',
+    'PKG_CONFIG_PATH': 'etc',
+
+}
+
+moduleclass = 'data'
+
+
+# eb ebfiles/UDA-2.2.6-foss-2019b-Python-3.7.4.eb --minimal-toolchain --use-existing-modules --robot-paths=ebfiles/:/opt/EasyBuild/software/EasyBuild/4.2.0/easybuild/easyconfigs/ --sourcepath=build_src/imas --rebuild  -lr
