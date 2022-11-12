@@ -1,0 +1,103 @@
+$id: git/2.33.0-GCCcore-9.3.0
+$schema: SpModule#SpModuleLocal
+annotation:
+  contributors: liuxj
+  date: Wed Nov  3 07:50:10 2021
+  email: lxj@ipp.ac.cn
+description: this is a template file. you can refer this template file to produce
+  your own fy_module file of different packages.  If you have any question ,please
+  connet to liuxj(lxj@ipp.ac.cn)
+homepage: http://funyun.com/demo.html
+information:
+  name: git
+  version: 2.33.0
+install:
+  $class: EasyBuild
+  process:
+    fetch:
+      sources:
+      - name: v2.33.0.tar.gz
+        path: /gpfs/fuyun/sources/g/git/v2.33.0.tar.gz
+        cmd:
+        checksum:
+        finalpath: /gpfs/fuyun/build/git/2.33.0/GCCcore-9.3.0
+    build:
+      build_cmd: eb /gpfs/fuyun/software/FyBuild/tests/data/FuYun/configure.yaml /builds/liuxiaojuan/fybuild-devops/EBexists-Rebuild-temple.yaml
+      ebfile: /gpfs/fuyun/software/git/2.33.0-GCCcore-9.3.0/easybuild/git-2.33.0-GCCcore-9.3.0.eb
+  depend:
+    depend_cmd: eb -Dr /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs
+      /gpfs/fuyun/EbfilesRespository
+    packageslist:
+    - 'Dry run: printing build status of easyconfigs and dependencies'
+    - ' * [x] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/m/M4/M4-1.4.18.eb
+      (module: M4/1.4.18)'
+    - ' * [x] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/b/Bison/Bison-3.3.2.eb
+      (module: Bison/3.3.2)'
+    - ' * [x] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/b/Bison/Bison-3.5.3.eb
+      (module: Bison/3.5.3)'
+    - ' * [x] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/z/zlib/zlib-1.2.11.eb
+      (module: zlib/1.2.11)'
+    - ' * [ ] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/h/help2man/help2man-1.47.4.eb
+      (module: help2man/1.47.4)'
+    - ' * [x] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/f/flex/flex-2.6.4.eb
+      (module: flex/2.6.4)'
+    - ' * [x] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/b/binutils/binutils-2.34.eb
+      (module: binutils/2.34)'
+    - ' * [x] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/g/GCCcore/GCCcore-9.3.0.eb
+      (module: GCCcore/9.3.0)'
+    - ' * [x] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/h/help2man/help2man-1.47.12-GCCcore-9.3.0.eb
+      (module: help2man/1.47.12-GCCcore-9.3.0)'
+    - ' * [x] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/z/zlib/zlib-1.2.11-GCCcore-9.3.0.eb
+      (module: zlib/1.2.11-GCCcore-9.3.0)'
+    - ' * [x] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/m/M4/M4-1.4.18-GCCcore-9.3.0.eb
+      (module: M4/1.4.18-GCCcore-9.3.0)'
+    - ' * [x] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/b/Bison/Bison-3.5.3-GCCcore-9.3.0.eb
+      (module: Bison/3.5.3-GCCcore-9.3.0)'
+    - ' * [x] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/f/flex/flex-2.6.4-GCCcore-9.3.0.eb
+      (module: flex/2.6.4-GCCcore-9.3.0)'
+    - ' * [x] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/b/binutils/binutils-2.34-GCCcore-9.3.0.eb
+      (module: binutils/2.34-GCCcore-9.3.0)'
+    - ' * [x] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/c/cURL/cURL-7.69.1-GCCcore-9.3.0.eb
+      (module: cURL/7.69.1-GCCcore-9.3.0)'
+    - ' * [x] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/e/expat/expat-2.2.9-GCCcore-9.3.0.eb
+      (module: expat/2.2.9-GCCcore-9.3.0)'
+    - ' * [x] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/l/libtool/libtool-2.4.6-GCCcore-9.3.0.eb
+      (module: libtool/2.4.6-GCCcore-9.3.0)'
+    - ' * [x] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/n/ncurses/ncurses-6.2-GCCcore-9.3.0.eb
+      (module: ncurses/6.2-GCCcore-9.3.0)'
+    - ' * [x] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/m/makeinfo/makeinfo-6.7-GCCcore-9.3.0.eb
+      (module: makeinfo/6.7-GCCcore-9.3.0)'
+    - ' * [x] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/l/libreadline/libreadline-8.0-GCCcore-9.3.0.eb
+      (module: libreadline/8.0-GCCcore-9.3.0)'
+    - ' * [x] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/g/groff/groff-1.22.4-GCCcore-9.3.0.eb
+      (module: groff/1.22.4-GCCcore-9.3.0)'
+    - ' * [x] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/d/DB/DB-18.1.32-GCCcore-9.3.0.eb
+      (module: DB/18.1.32-GCCcore-9.3.0)'
+    - ' * [x] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/p/Perl/Perl-5.30.2-GCCcore-9.3.0.eb
+      (module: Perl/5.30.2-GCCcore-9.3.0)'
+    - ' * [x] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/a/Autoconf/Autoconf-2.69-GCCcore-9.3.0.eb
+      (module: Autoconf/2.69-GCCcore-9.3.0)'
+    - ' * [x] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/a/Automake/Automake-1.16.1-GCCcore-9.3.0.eb
+      (module: Automake/1.16.1-GCCcore-9.3.0)'
+    - ' * [x] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/a/Autotools/Autotools-20180311-GCCcore-9.3.0.eb
+      (module: Autotools/20180311-GCCcore-9.3.0)'
+    - ' * [x] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/n/ncurses/ncurses-6.1.eb
+      (module: ncurses/6.1)'
+    - ' * [x] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/g/gettext/gettext-0.20.1.eb
+      (module: gettext/0.20.1)'
+    - ' * [x] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/x/XZ/XZ-5.2.5-GCCcore-9.3.0.eb
+      (module: XZ/5.2.5-GCCcore-9.3.0)'
+    - ' * [x] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/l/libxml2/libxml2-2.9.10-GCCcore-9.3.0.eb
+      (module: libxml2/2.9.10-GCCcore-9.3.0)'
+    - ' * [x] /gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs/g/gettext/gettext-0.20.1-GCCcore-9.3.0.eb
+      (module: gettext/0.20.1-GCCcore-9.3.0)'
+    - ' * [x] /gpfs/fuyun/EbfilesRespository/git/git-2.33.0-GCCcore-9.3.0.eb (module:
+      git/2.33.0-GCCcore-9.3.0)'
+  toolchain:
+    tag: GCCcore-9.3.0
+license: GPL
+postscript: module purge
+prescript:
+- /gpfs/fuyun//modules/all
+- module purge
+- module load git/2.33.0-GCCcore-9.3.0

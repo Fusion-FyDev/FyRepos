@@ -1,0 +1,85 @@
+$id: Blitz++/1.0.2-GCCcore-10.2.0
+$schema: SpModule#SpModuleLocal
+annotation:
+  contributors: liuxj
+  date: Fri Nov 19 01:06:15 2021
+  email: lxj@ipp.ac.cn
+description: this is a template file. you can refer this template file to produce
+  your own fy_module file of different packages.  If you have any question ,please
+  connet to liuxj(lxj@ipp.ac.cn)
+homepage: http://funyun.com/demo.html
+information:
+  name: Blitz++
+  version: 1.0.2
+install:
+  $class: EasyBuild
+  process:
+    fetch:
+      sources:
+      - name: 1.0.2.tar.gz
+        path: /fuyun/sources/b/Blitz++/1.0.2.tar.gz
+        cmd:
+        checksum: 500db9c3b2617e1f03d0e548977aec10d36811ba1c43bb5ef250c0e3853ae1c2
+        finalpath: /fuyun/build/Blitz/1.0.2/GCCcore-10.2.0
+    build:
+      build_cmd: eb -r easybuild/easyconfigs/i/IMAS/IMAS-3.34.0_4.9.2-foss-2020b_fix.eb
+      ebfile: /fuyun/software/Blitz++/1.0.2-GCCcore-10.2.0/easybuild/Blitz++-1.0.2-GCCcore-10.2.0.eb
+  depend:
+    depend_cmd: eb -Dr /gpfs/fuyun/FyRespository/EbfilesRespository/easybuild/easyconfigs
+      /fuyun/software/EasyBuild/4.4.1/easybuild/easyconfigs
+    packageslist:
+    - 'Dry run: printing build status of easyconfigs and dependencies'
+    - ' * [x] /fuyun/software/EasyBuild/4.4.1/easybuild/easyconfigs/m/M4/M4-1.4.18.eb
+      (module: M4/1.4.18)'
+    - ' * [x] /fuyun/software/EasyBuild/4.4.1/easybuild/easyconfigs/b/Bison/Bison-3.7.1.eb
+      (module: Bison/3.7.1)'
+    - ' * [x] /fuyun/software/EasyBuild/4.4.1/easybuild/easyconfigs/b/Bison/Bison-3.5.3.eb
+      (module: Bison/3.5.3)'
+    - ' * [x] /fuyun/software/EasyBuild/4.4.1/easybuild/easyconfigs/z/zlib/zlib-1.2.11.eb
+      (module: zlib/1.2.11)'
+    - ' * [x] /fuyun/software/EasyBuild/4.4.1/easybuild/easyconfigs/h/help2man/help2man-1.47.4.eb
+      (module: help2man/1.47.4)'
+    - ' * [x] /fuyun/software/EasyBuild/4.4.1/easybuild/easyconfigs/f/flex/flex-2.6.4.eb
+      (module: flex/2.6.4)'
+    - ' * [x] /fuyun/software/EasyBuild/4.4.1/easybuild/easyconfigs/b/binutils/binutils-2.35.eb
+      (module: binutils/2.35)'
+    - ' * [x] /fuyun/software/EasyBuild/4.4.1/easybuild/easyconfigs/g/GCCcore/GCCcore-10.2.0.eb
+      (module: GCCcore/10.2.0)'
+    - ' * [x] /fuyun/software/EasyBuild/4.4.1/easybuild/easyconfigs/z/zlib/zlib-1.2.11-GCCcore-10.2.0.eb
+      (module: zlib/1.2.11-GCCcore-10.2.0)'
+    - ' * [x] /fuyun/software/EasyBuild/4.4.1/easybuild/easyconfigs/h/help2man/help2man-1.47.16-GCCcore-10.2.0.eb
+      (module: help2man/1.47.16-GCCcore-10.2.0)'
+    - ' * [x] /fuyun/software/EasyBuild/4.4.1/easybuild/easyconfigs/m/M4/M4-1.4.18-GCCcore-10.2.0.eb
+      (module: M4/1.4.18-GCCcore-10.2.0)'
+    - ' * [x] /fuyun/software/EasyBuild/4.4.1/easybuild/easyconfigs/b/Bison/Bison-3.7.1-GCCcore-10.2.0.eb
+      (module: Bison/3.7.1-GCCcore-10.2.0)'
+    - ' * [x] /fuyun/software/EasyBuild/4.4.1/easybuild/easyconfigs/f/flex/flex-2.6.4-GCCcore-10.2.0.eb
+      (module: flex/2.6.4-GCCcore-10.2.0)'
+    - ' * [x] /fuyun/software/EasyBuild/4.4.1/easybuild/easyconfigs/b/binutils/binutils-2.35-GCCcore-10.2.0.eb
+      (module: binutils/2.35-GCCcore-10.2.0)'
+    - ' * [x] /fuyun/software/EasyBuild/4.4.1/easybuild/easyconfigs/n/ncurses/ncurses-6.2-GCCcore-10.2.0.eb
+      (module: ncurses/6.2-GCCcore-10.2.0)'
+    - ' * [x] /fuyun/software/EasyBuild/4.4.1/easybuild/easyconfigs/b/bzip2/bzip2-1.0.8-GCCcore-10.2.0.eb
+      (module: bzip2/1.0.8-GCCcore-10.2.0)'
+    - ' * [x] /fuyun/software/EasyBuild/4.4.1/easybuild/easyconfigs/c/cURL/cURL-7.72.0-GCCcore-10.2.0.eb
+      (module: cURL/7.72.0-GCCcore-10.2.0)'
+    - ' * [x] /fuyun/software/EasyBuild/4.4.1/easybuild/easyconfigs/n/ncurses/ncurses-6.2.eb
+      (module: ncurses/6.2)'
+    - ' * [x] /fuyun/software/EasyBuild/4.4.1/easybuild/easyconfigs/g/gettext/gettext-0.21.eb
+      (module: gettext/0.21)'
+    - ' * [x] /fuyun/software/EasyBuild/4.4.1/easybuild/easyconfigs/x/XZ/XZ-5.2.5-GCCcore-10.2.0.eb
+      (module: XZ/5.2.5-GCCcore-10.2.0)'
+    - ' * [x] /fuyun/software/EasyBuild/4.4.1/easybuild/easyconfigs/l/libarchive/libarchive-3.4.3-GCCcore-10.2.0.eb
+      (module: libarchive/3.4.3-GCCcore-10.2.0)'
+    - ' * [x] /fuyun/software/EasyBuild/4.4.1/easybuild/easyconfigs/c/CMake/CMake-3.18.4-GCCcore-10.2.0.eb
+      (module: CMake/3.18.4-GCCcore-10.2.0)'
+    - ' * [x] /gpfs/fuyun/FyRespository/EbfilesRespository/easybuild/easyconfigs/b/Blitz++/Blitz++-1.0.2-GCCcore-10.2.0.eb
+      (module: Blitz++/1.0.2-GCCcore-10.2.0)'
+  toolchain:
+    tag: GCCcore-10.2.0
+license: GPL
+postscript: module purge
+prescript:
+- /gpfs/fuyun//modules/all
+- module purge
+- module load Blitz++/1.0.2-GCCcore-10.2.0

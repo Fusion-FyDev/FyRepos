@@ -1,0 +1,28 @@
+name: genray-mpi
+version: '201213'
+tag: gompi-2020a
+fullname: genray-mpi/201213-gompi-2020a
+fullmodulename: genray-mpi-201213-gompi-2020a
+keyword: Try-Deploy
+depend_cmd: 'the information come from the ebfile which is in install directory '
+packageslist:
+- - pgplot
+  - '5.2'
+  - ''
+  - - GCCcore
+    - 9.3.0
+- - netCDF
+  - 4.7.4
+- - netCDF-Fortran
+  - 4.5.2
+- - OpenMPI
+  - 4.0.3
+  - ''
+  - - GCC
+    - 9.3.0
+sourceslist: /gpfs/fuyun//sources/g/genray-mpi
+fetchcmd:
+- the software is installed befor
+ebfilepath: /gpfs/fuyun//software/genray-mpi/201213-gompi-2020a/easybuild/genray-mpi-201213-gompi-2020a.eb
+buildcmd: eb genray-mpi-201213-gompi-2020a.eb -l --force --robot --minimal-toolchains
+  --experimental --use-existing-modules --info --robot-paths=/gpfs/fuyun/software/EasyBuild/4.3.2/easybuild/easyconfigs:/scratch/liuxj/FYDEV-Workspace/FyBuild/EbfilesRespository
