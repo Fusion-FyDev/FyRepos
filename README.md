@@ -8,7 +8,7 @@ The public availability of scientific software depends on its copyright, which i
     - Installation build information:
         - Build tool, sources,  dependency toolchain, dependency softwares ,build/install commnad
     - Load method:
-        - Use commands
+        - module load .....
 - ./easybuild/easyconfigs
     - Build/installation configuration file to facilitate the process of building and installing the software.
     - A specialized configuration file repository for scientific software sets in magnetic confinement fusion. 
@@ -18,4 +18,4 @@ The public availability of scientific software depends on its copyright, which i
         - ./easybuild/easyconfigs/i/IMAS
             - IMAS-3.37.0_4.11.0-foss-2020b.eb
             - imas_patch_foss_2020b.patch
-            - README_for_IMAS.MD
+            - README_for_IMAS.md
